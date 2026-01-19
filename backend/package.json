@@ -6,11 +6,11 @@
     "scripts": {
         "dev": "nodemon server.js",
         "start": "node server.js",
-        "db:generate": "prisma generate --schema=./database/schema.prisma",
-        "db:push": "prisma db push --schema=./database/schema.prisma",
-        "db:migrate": "prisma migrate dev --schema=./database/schema.prisma",
-        "db:studio": "prisma studio --schema=./database/schema.prisma",
-        "db:seed": "node database/seed.js"
+        "db:generate": "prisma generate --schema=./prisma/schema.prisma",
+        "db:push": "prisma db push --schema=./prisma/schema.prisma",
+        "db:migrate": "prisma migrate dev --schema=./prisma/schema.prisma",
+        "db:studio": "prisma studio --schema=./prisma/schema.prisma",
+        "db:seed": "node prisma/seed.js"
     },
     "keywords": [
         "pos",

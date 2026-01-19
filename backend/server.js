@@ -4,6 +4,12 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 require('dotenv').config();
 
+// Import routes
+const authRoutes = require('./src/routes/auth');
+
+// Import middleware
+const errorHandler = require('./src/middlewares/errorHandler');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -30,21 +36,19 @@ app.get('/health', (req, res) => {
   });
 });
 
-// API routes placeholder
+// API routes
 app.get('/api', (req, res) => {
   res.json({
     message: 'POS Analytics API v1.0.0',
     endpoints: {
       health: '/health',
-      auth: '/api/auth',
-      products: '/api/products',
-      transactions: '/api/transactions',
-      customers: '/api/customers',
-      feedback: '/api/feedback',
-      analytics: '/api/analytics'
+      auth: '/api/auth'
     }
   });
 });
+
+// Route handlers
+app.use('/api/auth', authRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
@@ -59,25 +63,13 @@ app.use('*', (req, res) => {
 });
 
 // Global error handler
-app.use((err, req, res, next) => {
-  console.error('Error:', err);
-  
-  res.status(err.status || 500).json({
-    success: false,
-    error: {
-      code: err.code || 'INTERNAL_SERVER_ERROR',
-      message: err.message || 'An unexpected error occurred',
-      timestamp: new Date().toISOString(),
-      path: req.path
-    }
-  });
-});
+app.use(errorHandler);
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`🚀 POS Analytics API server running on port ${PORT}`);
-  console.log(`📊 Health check: http://localhost:${PORT}/health`);
-  console.log(`🔗 API endpoints: http://localhost:${PORT}/api`);
+  console.log(`POS Analytics API server running on port ${PORT}`);
+  console.log(`Health check: http://localhost:${PORT}/health`);
+  console.log(`API endpoints: http://localhost:${PORT}/api`);
 });
 
 module.exports = app;

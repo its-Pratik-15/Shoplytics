@@ -1,9 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 
 // Initialize Prisma Client
-const prisma = new PrismaClient({
-  log: ['query', 'info', 'warn', 'error'],
-});
+const prisma = new PrismaClient();
 
 // Handle graceful shutdown
 process.on('beforeExit', async () => {
