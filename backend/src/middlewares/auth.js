@@ -8,16 +8,10 @@ const authenticateToken = async (req, res, next) => {
     const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
     if (!token) {
-      return res.status(401).json({
-        success: false,
-        error: {
-          code: 'NO_TOKEN',
-          message: 'Access token is required',
-          timestamp: new Date().toISOString()
-        }
-      });
+      throw createError('NO_TOKEN', 'Access token is required', 401);
     }
 
+    // verifyToken will throw error if invalid
     const decoded = verifyToken(token);
     
     // Check if user or employee exists
@@ -35,55 +29,31 @@ const authenticateToken = async (req, res, next) => {
     }
 
     if (!user) {
-      return res.status(401).json({
-        success: false,
-        error: {
-          code: 'INVALID_TOKEN',
-          message: 'Invalid authentication token',
-          timestamp: new Date().toISOString()
-        }
-      });
+      throw createError('INVALID_TOKEN', 'Invalid authentication token', 401);
     }
 
     req.user = { ...user, type: decoded.type };
     next();
   } catch (error) {
-    return res.status(error.statusCode || 401).json({
-      success: false,
-      error: {
-        code: error.code || 'INVALID_TOKEN',
-        message: error.message || 'Invalid or expired token',
-        timestamp: new Date().toISOString()
-      }
-    });
+    next(error); // Pass error to global error handler
   }
 };
 
 const requireRole = (allowedRoles) => {
   return (req, res, next) => {
-    if (!req.user) {
-      return res.status(401).json({
-        success: false,
-        error: {
-          code: 'UNAUTHORIZED',
-          message: 'Authentication required',
-          timestamp: new Date().toISOString()
-        }
-      });
-    }
+    try {
+      if (!req.user) {
+        throw createError('UNAUTHORIZED', 'Authentication required', 401);
+      }
 
-    if (!allowedRoles.includes(req.user.role)) {
-      return res.status(403).json({
-        success: false,
-        error: {
-          code: 'FORBIDDEN',
-          message: 'Insufficient permissions',
-          timestamp: new Date().toISOString()
-        }
-      });
-    }
+      if (!allowedRoles.includes(req.user.role)) {
+        throw createError('FORBIDDEN', 'Insufficient permissions', 403);
+      }
 
-    next();
+      next();
+    } catch (error) {
+      next(error); // Pass error to global error handler
+    }
   };
 };
 

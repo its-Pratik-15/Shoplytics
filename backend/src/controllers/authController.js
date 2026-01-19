@@ -3,105 +3,69 @@ const { validateRegister, validateLogin, validateRefresh } = require('../validat
 
 const register = async (req, res, next) => {
   try {
-    // Validate input
-    const validation = validateRegister(req.body);
-    if (!validation.isValid) {
-      return res.status(400).json({
-        success: false,
-        error: {
-          code: 'VALIDATION_ERROR',
-          message: validation.errors[0],
-          timestamp: new Date().toISOString()
-        }
-      });
-    }
-
-    const result = await authService.registerUser(validation.data);
+    // Validate input - throws error if invalid
+    const validatedData = validateRegister(req.body);
+    
+    // Register user - throws error if fails
+    const result = await authService.registerUser(validatedData);
     
     res.status(201).json({
       success: true,
       data: result
     });
   } catch (error) {
-    next(error);
+    next(error); // Pass error to global error handler
   }
 };
 
 const login = async (req, res, next) => {
   try {
-    // Validate input
-    const validation = validateLogin(req.body);
-    if (!validation.isValid) {
-      return res.status(400).json({
-        success: false,
-        error: {
-          code: 'VALIDATION_ERROR',
-          message: validation.errors[0],
-          timestamp: new Date().toISOString()
-        }
-      });
-    }
-
-    const result = await authService.loginUser(validation.data);
+    // Validate input - throws error if invalid
+    const validatedData = validateLogin(req.body);
+    
+    // Login user - throws error if fails
+    const result = await authService.loginUser(validatedData);
     
     res.json({
       success: true,
       data: result
     });
   } catch (error) {
-    next(error);
+    next(error); // Pass error to global error handler
   }
 };
 
 const registerEmployee = async (req, res, next) => {
   try {
-    // Validate input
-    const validation = validateRegister(req.body);
-    if (!validation.isValid) {
-      return res.status(400).json({
-        success: false,
-        error: {
-          code: 'VALIDATION_ERROR',
-          message: validation.errors[0],
-          timestamp: new Date().toISOString()
-        }
-      });
-    }
-
-    const result = await authService.registerEmployee(validation.data);
+    // Validate input - throws error if invalid
+    const validatedData = validateRegister(req.body);
+    
+    // Register employee - throws error if fails
+    const result = await authService.registerEmployee(validatedData);
     
     res.status(201).json({
       success: true,
       data: result
     });
   } catch (error) {
-    next(error);
+    next(error); // Pass error to global error handler
   }
 };
 
 const refreshToken = async (req, res, next) => {
   try {
-    // Validate input
-    const validation = validateRefresh(req.body);
-    if (!validation.isValid) {
-      return res.status(400).json({
-        success: false,
-        error: {
-          code: 'VALIDATION_ERROR',
-          message: validation.errors[0],
-          timestamp: new Date().toISOString()
-        }
-      });
-    }
-
-    const result = await authService.refreshToken(validation.data.refreshToken);
+    // Validate input - throws error if invalid
+    const validatedData = validateRefresh(req.body);
+    
+    // Refresh token - throws error if fails
+    const result = await authService.refreshToken(validatedData.refreshToken);
     
     res.json({
       success: true,
       data: result
     });
   } catch (error) {
-    next(error);
+    next(error); // Pass error to global error handler
   }
 };
 
