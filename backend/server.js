@@ -6,6 +6,7 @@ require('dotenv').config();
 
 // Import routes
 const authRoutes = require('./src/routes/auth');
+const productRoutes = require('./src/routes/products');
 
 // Import middleware
 const errorHandler = require('./src/middlewares/errorHandler');
@@ -42,13 +43,15 @@ app.get('/api', (req, res) => {
     message: 'POS Analytics API v1.0.0',
     endpoints: {
       health: '/health',
-      auth: '/api/auth'
+      auth: '/api/auth',
+      products: '/api/products'
     }
   });
 });
 
 // Route handlers
 app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

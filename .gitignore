@@ -8,6 +8,7 @@ yarn-error.log*
 backend/node_modules/
 backend/dist/
 backend/build/
+backend/uploads/
 
 # Production builds
 dist/
