@@ -9,6 +9,8 @@ const authRoutes = require('./src/routes/auth');
 const productRoutes = require('./src/routes/products');
 const transactionRoutes = require('./src/routes/transactions');
 const customerRoutes = require('./src/routes/customers');
+const feedbackRoutes = require('./src/routes/feedback');
+const analyticsRoutes = require('./src/routes/analytics');
 
 // Import middleware
 const errorHandler = require('./src/middlewares/errorHandler');
@@ -48,7 +50,9 @@ app.get('/api', (req, res) => {
       auth: '/api/auth',
       products: '/api/products',
       transactions: '/api/transactions',
-      customers: '/api/customers'
+      customers: '/api/customers',
+      feedback: '/api/feedback',
+      analytics: '/api/analytics'
     }
   });
 });
@@ -58,6 +62,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/customers', customerRoutes);
+app.use('/api/feedback', feedbackRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
