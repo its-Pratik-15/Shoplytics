@@ -7,6 +7,8 @@ require('dotenv').config();
 // Import routes
 const authRoutes = require('./src/routes/auth');
 const productRoutes = require('./src/routes/products');
+const transactionRoutes = require('./src/routes/transactions');
+const customerRoutes = require('./src/routes/customers');
 
 // Import middleware
 const errorHandler = require('./src/middlewares/errorHandler');
@@ -44,7 +46,9 @@ app.get('/api', (req, res) => {
     endpoints: {
       health: '/health',
       auth: '/api/auth',
-      products: '/api/products'
+      products: '/api/products',
+      transactions: '/api/transactions',
+      customers: '/api/customers'
     }
   });
 });
@@ -52,6 +56,8 @@ app.get('/api', (req, res) => {
 // Route handlers
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/transactions', transactionRoutes);
+app.use('/api/customers', customerRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
