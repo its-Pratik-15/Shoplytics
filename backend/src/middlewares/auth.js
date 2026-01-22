@@ -4,8 +4,13 @@ const { createError } = require('../utils/errors');
 
 const authenticateToken = async (req, res, next) => {
   try {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+    // Try to get token from cookies first, then from Authorization header
+    let token = req.cookies?.token;
+    
+    if (!token) {
+      const authHeader = req.headers['authorization'];
+      token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+    }
 
     if (!token) {
       throw createError('NO_TOKEN', 'Access token is required', 401);

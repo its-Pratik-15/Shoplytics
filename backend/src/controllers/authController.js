@@ -9,9 +9,27 @@ const register = async (req, res, next) => {
     // Register user - throws error if fails
     const result = await authService.registerUser(validatedData);
     
+    // Set httpOnly cookies
+    res.cookie('token', result.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    });
+    
+    res.cookie('user', JSON.stringify(result.user), {
+      httpOnly: false, // Allow frontend to read user data
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    });
+    
     res.status(201).json({
       success: true,
-      data: result
+      data: {
+        user: result.user,
+        message: 'Registration successful'
+      }
     });
   } catch (error) {
     next(error); // Pass error to global error handler
@@ -26,9 +44,27 @@ const login = async (req, res, next) => {
     // Login user - throws error if fails
     const result = await authService.loginUser(validatedData);
     
+    // Set httpOnly cookies
+    res.cookie('token', result.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    });
+    
+    res.cookie('user', JSON.stringify(result.user), {
+      httpOnly: false, // Allow frontend to read user data
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    });
+    
     res.json({
       success: true,
-      data: result
+      data: {
+        user: result.user,
+        message: 'Login successful'
+      }
     });
   } catch (error) {
     next(error); // Pass error to global error handler
@@ -69,9 +105,38 @@ const refreshToken = async (req, res, next) => {
   }
 };
 
+const logout = async (req, res, next) => {
+  try {
+    // Clear cookies
+    res.clearCookie('token');
+    res.clearCookie('user');
+    
+    res.json({
+      success: true,
+      message: 'Logout successful'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getProfile = async (req, res, next) => {
+  try {
+    // User is already available from auth middleware
+    res.json({
+      success: true,
+      data: req.user
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   register,
   login,
   registerEmployee,
-  refreshToken
+  refreshToken,
+  logout,
+  getProfile
 };
