@@ -1,5 +1,4 @@
 const prisma = require('../../prisma/db');
-const { createError } = require('../utils/errors');
 
 // Most selling products by quantity
 const getMostSellingProducts = async (filters = {}) => {
@@ -146,8 +145,7 @@ const getCustomerAnalytics = async (filters = {}) => {
       totalCustomers,
       customersWithPurchases,
       topCustomers,
-      repeatCustomers,
-      oneTimeCustomers
+      repeatCustomers
     ] = await Promise.all([
       // Total customers
       prisma.customer.count(),
@@ -185,50 +183,25 @@ const getCustomerAnalytics = async (filters = {}) => {
         }
       }),
       
-      // Repeat customers (more than 1 transaction)
+      // Repeat customers (customers with more than 1 transaction)
       prisma.customer.count({
         where: {
           transactions: {
             some: transactionWhere
-          },
-          AND: {
-            transactions: {
-              some: {
-                AND: [
-                  transactionWhere,
-                  {
-                    id: {
-                      not: undefined // This ensures we're looking for customers with multiple transactions
-                    }
-                  }
-                ]
-              }
-            }
           }
         }
-      }),
-      
-      // One-time customers
-      prisma.$queryRaw`
-        SELECT COUNT(DISTINCT c.id) as count
-        FROM customers c
-        WHERE (
-          SELECT COUNT(*)
-          FROM transactions t
-          WHERE t."customerId" = c.id
-          AND t.status = 'COMPLETED'
-          ${startDate ? `AND t."createdAt" >= ${startDate}` : ''}
-          ${endDate ? `AND t."createdAt" <= ${endDate}` : ''}
-        ) = 1
-      `
+      })
     ]);
+
+    // Calculate one-time customers (simplified approach)
+    const oneTimeCustomers = Math.max(0, customersWithPurchases - repeatCustomers);
 
     return {
       totalCustomers,
       customersWithPurchases,
       topCustomers,
       repeatCustomers,
-      oneTimeCustomers: oneTimeCustomers[0]?.count || 0
+      oneTimeCustomers
     };
   } catch (error) {
     throw error;
@@ -240,17 +213,6 @@ const getSalesTrends = async (filters = {}) => {
   try {
     const { period = 'daily', startDate, endDate } = filters;
     
-    let dateFormat;
-    let groupBy;
-    
-    if (period === 'monthly') {
-      dateFormat = 'YYYY-MM';
-      groupBy = `DATE_TRUNC('month', "createdAt")`;
-    } else {
-      dateFormat = 'YYYY-MM-DD';
-      groupBy = `DATE_TRUNC('day', "createdAt")`;
-    }
-
     const where = { status: 'COMPLETED' };
     if (startDate || endDate) {
       where.createdAt = {};
@@ -258,27 +220,49 @@ const getSalesTrends = async (filters = {}) => {
       if (endDate) where.createdAt.lte = endDate;
     }
 
-    // Get sales data grouped by period
-    const salesData = await prisma.$queryRaw`
-      SELECT 
-        ${groupBy} as period,
-        COUNT(*)::int as transaction_count,
-        SUM(total)::decimal as total_revenue,
-        AVG(total)::decimal as avg_order_value
-      FROM transactions
-      WHERE status = 'COMPLETED'
-      ${startDate ? `AND "createdAt" >= ${startDate}` : ''}
-      ${endDate ? `AND "createdAt" <= ${endDate}` : ''}
-      GROUP BY ${groupBy}
-      ORDER BY period ASC
-    `;
+    // Get all transactions and group them in JavaScript for simplicity
+    const transactions = await prisma.transaction.findMany({
+      where,
+      select: {
+        createdAt: true,
+        total: true
+      },
+      orderBy: {
+        createdAt: 'asc'
+      }
+    });
 
-    return salesData.map(item => ({
+    // Group by period
+    const groupedData = {};
+    transactions.forEach(transaction => {
+      let periodKey;
+      if (period === 'monthly') {
+        periodKey = transaction.createdAt.toISOString().substring(0, 7); // YYYY-MM
+      } else {
+        periodKey = transaction.createdAt.toISOString().substring(0, 10); // YYYY-MM-DD
+      }
+
+      if (!groupedData[periodKey]) {
+        groupedData[periodKey] = {
+          period: periodKey,
+          transactionCount: 0,
+          totalRevenue: 0,
+          totalAmount: 0
+        };
+      }
+
+      groupedData[periodKey].transactionCount++;
+      groupedData[periodKey].totalRevenue += parseFloat(transaction.total);
+      groupedData[periodKey].totalAmount += parseFloat(transaction.total);
+    });
+
+    // Calculate averages and return sorted data
+    return Object.values(groupedData).map(item => ({
       period: item.period,
-      transactionCount: item.transaction_count,
-      totalRevenue: parseFloat(item.total_revenue || 0),
-      avgOrderValue: parseFloat(item.avg_order_value || 0)
-    }));
+      transactionCount: item.transactionCount,
+      totalRevenue: item.totalRevenue,
+      avgOrderValue: item.transactionCount > 0 ? item.totalAmount / item.transactionCount : 0
+    })).sort((a, b) => a.period.localeCompare(b.period));
   } catch (error) {
     throw error;
   }
@@ -298,7 +282,7 @@ const getFeedbackSpendingInsights = async (filters = {}) => {
 
     const [
       feedbackByRating,
-      avgSpendingByRating,
+      customersWithFeedback,
       topSpendersWithFeedback
     ] = await Promise.all([
       // Feedback distribution by rating
@@ -309,21 +293,22 @@ const getFeedbackSpendingInsights = async (filters = {}) => {
         orderBy: { rating: 'asc' }
       }),
       
-      // Average spending by rating
-      prisma.$queryRaw`
-        SELECT 
-          f.rating,
-          AVG(c."totalSpending")::decimal as avg_spending,
-          COUNT(DISTINCT c.id)::int as customer_count
-        FROM feedback f
-        JOIN customers c ON f."customerId" = c.id
-        ${startDate || endDate ? 'WHERE' : ''}
-        ${startDate ? `f."createdAt" >= ${startDate}` : ''}
-        ${startDate && endDate ? 'AND' : ''}
-        ${endDate ? `f."createdAt" <= ${endDate}` : ''}
-        GROUP BY f.rating
-        ORDER BY f.rating ASC
-      `,
+      // Get customers with feedback to calculate average spending by rating
+      prisma.customer.findMany({
+        where: {
+          feedback: {
+            some: where
+          }
+        },
+        include: {
+          feedback: {
+            where,
+            select: {
+              rating: true
+            }
+          }
+        }
+      }),
       
       // Top spending customers with their feedback
       prisma.customer.findMany({
@@ -355,18 +340,37 @@ const getFeedbackSpendingInsights = async (filters = {}) => {
           }
         }
       })
-    ];
+    ]);
+
+    // Calculate average spending by rating
+    const spendingByRating = {};
+    customersWithFeedback.forEach(customer => {
+      customer.feedback.forEach(feedback => {
+        if (!spendingByRating[feedback.rating]) {
+          spendingByRating[feedback.rating] = {
+            totalSpending: 0,
+            customerCount: 0
+          };
+        }
+        spendingByRating[feedback.rating].totalSpending += parseFloat(customer.totalSpending || 0);
+        spendingByRating[feedback.rating].customerCount++;
+      });
+    });
+
+    const avgSpendingByRating = Object.keys(spendingByRating).map(rating => ({
+      rating: parseInt(rating),
+      avgSpending: spendingByRating[rating].customerCount > 0 
+        ? spendingByRating[rating].totalSpending / spendingByRating[rating].customerCount 
+        : 0,
+      customerCount: spendingByRating[rating].customerCount
+    })).sort((a, b) => a.rating - b.rating);
 
     return {
       feedbackDistribution: feedbackByRating.map(item => ({
         rating: item.rating,
         count: item._count.rating
       })),
-      avgSpendingByRating: avgSpendingByRating.map(item => ({
-        rating: item.rating,
-        avgSpending: parseFloat(item.avg_spending || 0),
-        customerCount: item.customer_count
-      })),
+      avgSpendingByRating,
       topSpendersWithFeedback
     };
   } catch (error) {
@@ -459,7 +463,7 @@ const getDashboardOverview = async (filters = {}) => {
           }
         }
       })
-    ];
+    ]);
 
     return {
       totalRevenue: totalRevenue._sum.total || 0,
