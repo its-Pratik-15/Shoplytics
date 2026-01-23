@@ -1,5 +1,5 @@
 const authService = require('../services/authService');
-const { validateRegister, validateLogin, validateRefresh } = require('../validations/authValidation');
+const { validateRegister, validateLogin } = require('../validations/authValidation');
 
 const register = async (req, res, next) => {
   try {
@@ -9,19 +9,21 @@ const register = async (req, res, next) => {
     // Register user - throws error if fails
     const result = await authService.registerUser(validatedData);
     
-    // Set httpOnly cookies
+    // Set httpOnly cookies (7 days expiry)
     res.cookie('token', result.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: '/'
     });
     
     res.cookie('user', JSON.stringify(result.user), {
       httpOnly: false, // Allow frontend to read user data
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: '/'
     });
     
     res.status(201).json({
@@ -44,19 +46,21 @@ const login = async (req, res, next) => {
     // Login user - throws error if fails
     const result = await authService.loginUser(validatedData);
     
-    // Set httpOnly cookies
+    // Set httpOnly cookies (7 days expiry)
     res.cookie('token', result.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: '/'
     });
     
     res.cookie('user', JSON.stringify(result.user), {
       httpOnly: false, // Allow frontend to read user data
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: '/'
     });
     
     res.json({

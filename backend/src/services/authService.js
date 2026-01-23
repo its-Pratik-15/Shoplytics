@@ -35,15 +35,13 @@ const registerUser = async (userData) => {
     }
   });
 
-  // Generate tokens
-  const accessToken = generateToken(user, 'user');
-  const refreshToken = generateRefreshToken(user, 'user');
+  // Generate token (7 days expiry)
+  const token = generateToken(user, 'user');
 
   return {
     user,
-    accessToken,
-    refreshToken,
-    expiresIn: 24 * 60 * 60 // 24 hours in seconds
+    token,
+    expiresIn: 7 * 24 * 60 * 60 // 7 days in seconds
   };
 };
 
@@ -121,52 +119,18 @@ const loginUser = async (loginData) => {
   // Remove password from response
   const { password: _, ...userWithoutPassword } = user;
 
-  // Generate tokens
-  const accessToken = generateToken(userWithoutPassword, type);
-  const refreshToken = generateRefreshToken(userWithoutPassword, type);
+  // Generate token (7 days expiry)
+  const token = generateToken(userWithoutPassword, type);
 
   return {
     user: userWithoutPassword,
-    accessToken,
-    refreshToken,
-    expiresIn: 24 * 60 * 60 // 24 hours in seconds
-  };
-};
-
-const refreshToken = async (refreshTokenValue) => {
-  const decoded = verifyRefreshToken(refreshTokenValue);
-  
-  let user = null;
-  if (decoded.type === 'user') {
-    user = await prisma.user.findUnique({
-      where: { id: decoded.id },
-      select: { id: true, email: true, name: true, role: true }
-    });
-  } else if (decoded.type === 'employee') {
-    user = await prisma.employee.findUnique({
-      where: { id: decoded.id },
-      select: { id: true, email: true, name: true, role: true }
-    });
-  }
-
-  if (!user) {
-    throw createError('INVALID_REFRESH_TOKEN', 'Invalid refresh token', 401);
-  }
-
-  // Generate new tokens
-  const newAccessToken = generateToken(user, decoded.type);
-  const newRefreshToken = generateRefreshToken(user, decoded.type);
-
-  return {
-    accessToken: newAccessToken,
-    refreshToken: newRefreshToken,
-    expiresIn: 24 * 60 * 60 // 24 hours in seconds
+    token,
+    expiresIn: 7 * 24 * 60 * 60 // 7 days in seconds
   };
 };
 
 module.exports = {
   registerUser,
   registerEmployee,
-  loginUser,
-  refreshToken
+  loginUser
 };
