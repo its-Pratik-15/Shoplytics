@@ -7,24 +7,38 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [authChecked, setAuthChecked] = useState(false);
 
     useEffect(() => {
+        // Prevent multiple auth checks
+        if (authChecked) return;
+
+        let isMounted = true;
+
         const initAuth = async () => {
             try {
                 const response = await authAPI.getProfile();
-                if (response.success) {
+                if (response.success && isMounted) {
                     setUser(response.data);
                 }
             } catch (error) {
-                // User not authenticated
-                setUser(null);
+                if (isMounted) {
+                    setUser(null);
+                }
             } finally {
-                setLoading(false);
+                if (isMounted) {
+                    setLoading(false);
+                    setAuthChecked(true);
+                }
             }
         };
 
         initAuth();
-    }, []);
+
+        return () => {
+            isMounted = false;
+        };
+    }, [authChecked]);
 
     const login = async (credentials) => {
         try {

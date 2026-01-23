@@ -14,10 +14,8 @@ const api = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      // Token expired or invalid - cookies will be cleared by backend
-      window.location.href = '/login';
-    }
+    // Don't automatically redirect on 401 - let components handle it
+    // The AuthProvider will handle authentication state properly
     return Promise.reject(error);
   }
 );
