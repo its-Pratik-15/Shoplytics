@@ -1,6 +1,8 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { LoginPage, RegisterPage, ProtectedRoute } from '../../features/auth';
 import { DashboardPage } from '../../features/dashboard';
+import { ProductsPage } from '../../features/products';
+import { CustomersPage } from '../../features/customers';
 
 export const AppRouter = () => {
     return (
@@ -12,6 +14,22 @@ export const AppRouter = () => {
                 element={
                     <ProtectedRoute>
                         <DashboardPage />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/products"
+                element={
+                    <ProtectedRoute>
+                        <ProductsPage />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/customers"
+                element={
+                    <ProtectedRoute>
+                        <CustomersPage />
                     </ProtectedRoute>
                 }
             />
