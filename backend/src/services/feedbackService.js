@@ -38,7 +38,8 @@ const createFeedback = async (feedbackData) => {
           select: {
             id: true,
             name: true,
-            email: true
+            email: true,
+            isNewCustomer: true
           }
         }
       }
@@ -96,7 +97,8 @@ const getAllFeedback = async (filters = {}) => {
               id: true,
               name: true,
               email: true,
-              totalSpending: true
+              totalSpending: true,
+              isNewCustomer: true
             }
           }
         }
@@ -132,6 +134,7 @@ const getFeedbackById = async (feedbackId) => {
             email: true,
             phone: true,
             totalSpending: true,
+            isNewCustomer: true,
             _count: {
               select: {
                 transactions: true
@@ -177,7 +180,8 @@ const updateFeedback = async (feedbackId, updateData, customerId) => {
           select: {
             id: true,
             name: true,
-            email: true
+            email: true,
+            isNewCustomer: true
           }
         }
       }
@@ -300,7 +304,8 @@ const getFeedbackByCustomer = async (customerId) => {
           select: {
             id: true,
             name: true,
-            email: true
+            email: true,
+            isNewCustomer: true
           }
         }
       }

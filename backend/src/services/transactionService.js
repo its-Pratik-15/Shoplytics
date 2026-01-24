@@ -127,7 +127,8 @@ const createTransaction = async (transactionData, userId, employeeId) => {
             id: true,
             name: true,
             email: true,
-            phone: true
+            phone: true,
+            isNewCustomer: true
           }
         },
         employee: {
@@ -205,7 +206,8 @@ const getAllTransactions = async (filters = {}) => {
             select: {
               id: true,
               name: true,
-              email: true
+              email: true,
+              isNewCustomer: true
             }
           },
           employee: {
@@ -268,7 +270,8 @@ const getTransactionById = async (transactionId) => {
             name: true,
             email: true,
             phone: true,
-            address: true
+            address: true,
+            isNewCustomer: true
           }
         },
         employee: {
