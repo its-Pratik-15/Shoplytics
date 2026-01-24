@@ -22,7 +22,8 @@ export const ProductForm = ({ product, onSuccess, onCancel }) => {
         defaultValues: product || {
             name: '',
             description: '',
-            price: '',
+            sellingPrice: '',
+            costPrice: '',
             quantity: '',
             category: '',
             sku: ''
@@ -35,7 +36,7 @@ export const ProductForm = ({ product, onSuccess, onCancel }) => {
 
             const formData = new FormData();
             Object.keys(data).forEach(key => {
-                if (key === 'price' || key === 'quantity') {
+                if (key === 'sellingPrice' || key === 'costPrice' || key === 'quantity') {
                     formData.append(key, parseFloat(data[key]));
                 } else {
                     formData.append(key, data[key]);
@@ -154,14 +155,28 @@ export const ProductForm = ({ product, onSuccess, onCancel }) => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                         <Input
-                            label="Price (₹)"
+                            label="Selling Price (₹)"
                             type="number"
                             step="0.01"
-                            {...register('price', {
-                                required: 'Price is required',
-                                min: { value: 0.01, message: 'Price must be greater than 0' }
+                            {...register('sellingPrice', {
+                                required: 'Selling price is required',
+                                min: { value: 0.01, message: 'Selling price must be greater than 0' }
                             })}
-                            error={errors.price?.message}
+                            error={errors.sellingPrice?.message}
+                            placeholder="0.00"
+                        />
+                    </div>
+
+                    <div>
+                        <Input
+                            label="Cost Price (₹)"
+                            type="number"
+                            step="0.01"
+                            {...register('costPrice', {
+                                required: 'Cost price is required',
+                                min: { value: 0.01, message: 'Cost price must be greater than 0' }
+                            })}
+                            error={errors.costPrice?.message}
                             placeholder="0.00"
                         />
                     </div>

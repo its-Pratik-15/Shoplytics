@@ -25,13 +25,13 @@ const createTransaction = async (transactionData, userId, employeeId) => {
         );
       }
 
-      const subtotal = product.price * item.quantity;
+      const subtotal = product.sellingPrice * item.quantity;
       totalAmount += Number(subtotal);
 
       productDetails.push({
         ...item,
         product,
-        priceAtSale: product.price,
+        priceAtSale: product.sellingPrice,
         subtotal
       });
     }
@@ -116,7 +116,8 @@ const createTransaction = async (transactionData, userId, employeeId) => {
               select: {
                 id: true,
                 name: true,
-                price: true,
+                sellingPrice: true,
+                costPrice: true,
                 category: true
               }
             }
@@ -197,6 +198,8 @@ const getAllTransactions = async (filters = {}) => {
                 select: {
                   id: true,
                   name: true,
+                  sellingPrice: true,
+                  costPrice: true,
                   category: true
                 }
               }
@@ -257,7 +260,8 @@ const getTransactionById = async (transactionId) => {
                 id: true,
                 name: true,
                 description: true,
-                price: true,
+                sellingPrice: true,
+                costPrice: true,
                 category: true,
                 imageUrls: true
               }

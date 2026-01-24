@@ -39,7 +39,8 @@ async function main() {
     {
       name: 'Tata Tea Gold',
       description: 'Premium black tea blend 500g pack',
-      price: 285.00,
+      sellingPrice: 285.00,
+      costPrice: 228.00,
       quantity: 150,
       category: 'Beverages',
       sku: 'TEA001'
@@ -47,7 +48,8 @@ async function main() {
     {
       name: 'Amul Butter',
       description: 'Fresh salted butter 500g pack',
-      price: 240.00,
+      sellingPrice: 240.00,
+      costPrice: 192.00,
       quantity: 80,
       category: 'Dairy',
       sku: 'BUTTER001'
@@ -55,7 +57,8 @@ async function main() {
     {
       name: 'Basmati Rice',
       description: 'Premium aged basmati rice 5kg bag',
-      price: 850.00,
+      sellingPrice: 850.00,
+      costPrice: 680.00,
       quantity: 45,
       category: 'Grains',
       sku: 'RICE001'
@@ -63,7 +66,8 @@ async function main() {
     {
       name: 'Maggi Noodles',
       description: 'Masala instant noodles 2-minute pack',
-      price: 14.00,
+      sellingPrice: 14.00,
+      costPrice: 11.20,
       quantity: 200,
       category: 'Instant Food',
       sku: 'NOODLES001'
@@ -71,7 +75,8 @@ async function main() {
     {
       name: 'Parle-G Biscuits',
       description: 'Glucose biscuits family pack 800g',
-      price: 85.00,
+      sellingPrice: 85.00,
+      costPrice: 68.00,
       quantity: 120,
       category: 'Biscuits',
       sku: 'BISCUIT001'
@@ -79,7 +84,8 @@ async function main() {
     {
       name: 'Surf Excel Detergent',
       description: 'Matic front load washing powder 2kg',
-      price: 485.00,
+      sellingPrice: 485.00,
+      costPrice: 388.00,
       quantity: 60,
       category: 'Household',
       sku: 'DETERGENT001'
@@ -87,7 +93,8 @@ async function main() {
     {
       name: 'Haldiram Namkeen',
       description: 'Aloo Bhujia spicy snack 400g pack',
-      price: 120.00,
+      sellingPrice: 120.00,
+      costPrice: 96.00,
       quantity: 90,
       category: 'Snacks',
       sku: 'NAMKEEN001'
@@ -95,7 +102,8 @@ async function main() {
     {
       name: 'Dabur Honey',
       description: 'Pure natural honey 500g bottle',
-      price: 320.00,
+      sellingPrice: 320.00,
+      costPrice: 256.00,
       quantity: 70,
       category: 'Health',
       sku: 'HONEY001'
@@ -103,7 +111,8 @@ async function main() {
     {
       name: 'Britannia Bread',
       description: 'White bread loaf 400g pack',
-      price: 28.00,
+      sellingPrice: 28.00,
+      costPrice: 22.40,
       quantity: 100,
       category: 'Bakery',
       sku: 'BREAD001'
@@ -111,7 +120,8 @@ async function main() {
     {
       name: 'Colgate Toothpaste',
       description: 'Strong teeth toothpaste 200g tube',
-      price: 95.00,
+      sellingPrice: 95.00,
+      costPrice: 76.00,
       quantity: 85,
       category: 'Personal Care',
       sku: 'TOOTHPASTE001'
@@ -119,7 +129,8 @@ async function main() {
     {
       name: 'Patanjali Atta',
       description: 'Whole wheat flour 10kg bag',
-      price: 420.00,
+      sellingPrice: 420.00,
+      costPrice: 336.00,
       quantity: 35,
       category: 'Grains',
       sku: 'ATTA001'
@@ -127,7 +138,8 @@ async function main() {
     {
       name: 'MTR Ready Mix',
       description: 'Rava Idli instant mix 500g pack',
-      price: 85.00,
+      sellingPrice: 85.00,
+      costPrice: 68.00,
       quantity: 65,
       category: 'Instant Food',
       sku: 'READYMIX001'

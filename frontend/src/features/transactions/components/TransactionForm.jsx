@@ -64,7 +64,7 @@ export const TransactionForm = ({ onSuccess, onCancel }) => {
         return items.reduce((total, item) => {
             const product = products.find(p => p.id === item.productId);
             if (product) {
-                return total + (product.price * item.quantity);
+                return total + (product.sellingPrice * item.quantity);
             }
             return total;
         }, 0);
@@ -172,7 +172,7 @@ export const TransactionForm = ({ onSuccess, onCancel }) => {
                                         <option value="">Select Product</option>
                                         {products.map(product => (
                                             <option key={product.id} value={product.id}>
-                                                {product.name} - {formatCurrency(product.price)} (Stock: {product.quantity})
+                                                {product.name} - {formatCurrency(product.sellingPrice)} (Stock: {product.quantity})
                                             </option>
                                         ))}
                                     </select>

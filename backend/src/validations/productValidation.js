@@ -1,7 +1,7 @@
 const { createError } = require('../utils/errors');
 
 const validateCreateProduct = (data) => {
-  const { name, description, price, quantity, category, sku } = data;
+  const { name, description, sellingPrice, costPrice, quantity, category, sku } = data;
 
   // Name validation
   if (!name) {
@@ -14,12 +14,25 @@ const validateCreateProduct = (data) => {
     throw createError('VALIDATION_ERROR', 'Product name cannot exceed 100 characters', 400);
   }
 
-  // Price validation
-  if (price === undefined || price === null) {
-    throw createError('VALIDATION_ERROR', 'Product price is required', 400);
+  // Selling Price validation
+  if (sellingPrice === undefined || sellingPrice === null) {
+    throw createError('VALIDATION_ERROR', 'Product selling price is required', 400);
   }
-  if (isNaN(price) || parseFloat(price) < 0) {
-    throw createError('VALIDATION_ERROR', 'Product price must be a valid positive number', 400);
+  if (isNaN(sellingPrice) || parseFloat(sellingPrice) < 0) {
+    throw createError('VALIDATION_ERROR', 'Product selling price must be a valid positive number', 400);
+  }
+
+  // Cost Price validation
+  if (costPrice === undefined || costPrice === null) {
+    throw createError('VALIDATION_ERROR', 'Product cost price is required', 400);
+  }
+  if (isNaN(costPrice) || parseFloat(costPrice) < 0) {
+    throw createError('VALIDATION_ERROR', 'Product cost price must be a valid positive number', 400);
+  }
+
+  // Business rule: Cost price should be less than selling price
+  if (parseFloat(costPrice) >= parseFloat(sellingPrice)) {
+    throw createError('VALIDATION_ERROR', 'Cost price must be less than selling price', 400);
   }
 
   // Quantity validation
@@ -48,7 +61,8 @@ const validateCreateProduct = (data) => {
   return {
     name: name.trim(),
     description: description ? description.trim() : null,
-    price: parseFloat(price),
+    sellingPrice: parseFloat(sellingPrice),
+    costPrice: parseFloat(costPrice),
     quantity: parseInt(quantity),
     category: category ? category.trim() : null,
     sku: sku ? sku.trim() : null
@@ -56,7 +70,7 @@ const validateCreateProduct = (data) => {
 };
 
 const validateUpdateProduct = (data) => {
-  const { name, description, price, quantity, category, sku } = data;
+  const { name, description, sellingPrice, costPrice, quantity, category, sku } = data;
 
   const updates = {};
 
@@ -74,12 +88,27 @@ const validateUpdateProduct = (data) => {
     updates.name = name.trim();
   }
 
-  // Price validation (optional for update)
-  if (price !== undefined) {
-    if (isNaN(price) || parseFloat(price) < 0) {
-      throw createError('VALIDATION_ERROR', 'Product price must be a valid positive number', 400);
+  // Selling Price validation (optional for update)
+  if (sellingPrice !== undefined) {
+    if (isNaN(sellingPrice) || parseFloat(sellingPrice) < 0) {
+      throw createError('VALIDATION_ERROR', 'Product selling price must be a valid positive number', 400);
     }
-    updates.price = parseFloat(price);
+    updates.sellingPrice = parseFloat(sellingPrice);
+  }
+
+  // Cost Price validation (optional for update)
+  if (costPrice !== undefined) {
+    if (isNaN(costPrice) || parseFloat(costPrice) < 0) {
+      throw createError('VALIDATION_ERROR', 'Product cost price must be a valid positive number', 400);
+    }
+    updates.costPrice = parseFloat(costPrice);
+  }
+
+  // Business rule: Cost price should be less than selling price (if both are being updated)
+  if (updates.sellingPrice !== undefined && updates.costPrice !== undefined) {
+    if (updates.costPrice >= updates.sellingPrice) {
+      throw createError('VALIDATION_ERROR', 'Cost price must be less than selling price', 400);
+    }
   }
 
   // Quantity validation (optional for update)

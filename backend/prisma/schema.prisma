@@ -45,7 +45,8 @@ model Product {
   id          String   @id @default(cuid())
   name        String
   description String?
-  price       Decimal  @db.Decimal(10, 2)
+  sellingPrice Decimal @db.Decimal(10, 2)
+  costPrice   Decimal  @db.Decimal(10, 2)
   quantity    Int
   imageUrls   String[]
   category    String?

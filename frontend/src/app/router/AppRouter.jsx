@@ -5,7 +5,7 @@ import { ProductsPage, ProductEditPage } from '../../features/products';
 import { CustomersPage } from '../../features/customers';
 import { TransactionsPage } from '../../features/transactions';
 import { FeedbackPage } from '../../features/feedback';
-import { AnalyticsPage } from '../../features/analytics';
+import { AnalyticsPage, MostSellingProductsPage, HighestRevenueProductsPage } from '../../features/analytics';
 
 export const AppRouter = () => {
     return (
@@ -73,6 +73,22 @@ export const AppRouter = () => {
                 element={
                     <ProtectedRoute>
                         <AnalyticsPage />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/analytics/most-selling"
+                element={
+                    <ProtectedRoute>
+                        <MostSellingProductsPage />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/analytics/highest-revenue"
+                element={
+                    <ProtectedRoute>
+                        <HighestRevenueProductsPage />
                     </ProtectedRoute>
                 }
             />

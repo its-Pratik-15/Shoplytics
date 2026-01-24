@@ -82,7 +82,7 @@ export const ProductCard = ({ product, onDelete, canManage = false }) => {
                         <div className="flex justify-between text-sm">
                             <span className="text-gray-500">Price:</span>
                             <span className="font-semibold text-green-600">
-                                {formatCurrency(product.price)}
+                                {formatCurrency(product.sellingPrice)}
                             </span>
                         </div>
                         <div className="flex justify-between text-sm">

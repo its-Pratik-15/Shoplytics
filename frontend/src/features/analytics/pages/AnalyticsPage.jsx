@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Layout from '../../../shared/components/layout/Layout';
 import { Card } from '../../../shared/components/ui/Card';
 import { analyticsAPI } from '../services/analytics.api';
@@ -189,7 +190,15 @@ export const AnalyticsPage = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Most Selling Products */}
                     <Card className="p-6">
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">Most Selling Products</h3>
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-medium text-gray-900">Most Selling Products</h3>
+                            <Link
+                                to="/analytics/most-selling"
+                                className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                            >
+                                See More →
+                            </Link>
+                        </div>
                         <div className="space-y-3">
                             {mostSellingProducts.map((item, index) => (
                                 <div key={index} className="flex items-center justify-between">
@@ -217,7 +226,15 @@ export const AnalyticsPage = () => {
 
                     {/* Highest Revenue Products */}
                     <Card className="p-6">
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">Highest Revenue Products</h3>
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-medium text-gray-900">Highest Revenue Products</h3>
+                            <Link
+                                to="/analytics/highest-revenue"
+                                className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                            >
+                                See More →
+                            </Link>
+                        </div>
                         <div className="space-y-3">
                             {highestRevenueProducts.map((item, index) => (
                                 <div key={index} className="flex items-center justify-between">
