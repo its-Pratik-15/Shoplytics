@@ -116,7 +116,7 @@ const getHighestRevenueProducts = async (filters = {}) => {
 
         return {
           product,
-          totalRevenue: item._sum.subtotal,
+          totalRevenue: parseFloat(item._sum.subtotal || 0),
           totalQuantitySold: item._sum.quantity,
           totalTransactions: item._count.productId
         };
@@ -252,16 +252,16 @@ const getSalesTrends = async (filters = {}) => {
       }
 
       groupedData[periodKey].transactionCount++;
-      groupedData[periodKey].totalRevenue += parseFloat(transaction.total);
-      groupedData[periodKey].totalAmount += parseFloat(transaction.total);
+      groupedData[periodKey].totalRevenue += parseFloat(transaction.total || 0);
+      groupedData[periodKey].totalAmount += parseFloat(transaction.total || 0);
     });
 
     // Calculate averages and return sorted data
     return Object.values(groupedData).map(item => ({
       period: item.period,
       transactionCount: item.transactionCount,
-      totalRevenue: item.totalRevenue,
-      avgOrderValue: item.transactionCount > 0 ? item.totalAmount / item.transactionCount : 0
+      totalRevenue: parseFloat(item.totalRevenue.toFixed(2)),
+      avgOrderValue: item.transactionCount > 0 ? parseFloat((item.totalAmount / item.transactionCount).toFixed(2)) : 0
     })).sort((a, b) => a.period.localeCompare(b.period));
   } catch (error) {
     throw error;
@@ -360,7 +360,7 @@ const getFeedbackSpendingInsights = async (filters = {}) => {
     const avgSpendingByRating = Object.keys(spendingByRating).map(rating => ({
       rating: parseInt(rating),
       avgSpending: spendingByRating[rating].customerCount > 0 
-        ? spendingByRating[rating].totalSpending / spendingByRating[rating].customerCount 
+        ? parseFloat((spendingByRating[rating].totalSpending / spendingByRating[rating].customerCount).toFixed(2))
         : 0,
       customerCount: spendingByRating[rating].customerCount
     })).sort((a, b) => a.rating - b.rating);
@@ -466,11 +466,11 @@ const getDashboardOverview = async (filters = {}) => {
     ]);
 
     return {
-      totalRevenue: totalRevenue._sum.total || 0,
+      totalRevenue: parseFloat(totalRevenue._sum.total || 0),
       totalTransactions,
       totalCustomers,
-      averageOrderValue: averageOrderValue._avg.total || 0,
-      averageRating: averageRating._avg.rating || 0,
+      averageOrderValue: parseFloat(averageOrderValue._avg.total || 0),
+      averageRating: parseFloat(averageRating._avg.rating || 0),
       lowStockProducts,
       recentTransactions
     };
