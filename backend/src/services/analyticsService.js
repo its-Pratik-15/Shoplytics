@@ -1,5 +1,11 @@
 const prisma = require('../../prisma/db');
 
+// Helper function to convert Prisma Decimal to number
+const toNumber = (decimal) => {
+  if (decimal === null || decimal === undefined) return 0;
+  return Number(decimal.toString());
+};
+
 // Most selling products by quantity
 const getMostSellingProducts = async (filters = {}) => {
   try {
@@ -116,7 +122,7 @@ const getHighestRevenueProducts = async (filters = {}) => {
 
         return {
           product,
-          totalRevenue: parseFloat(item._sum.subtotal || 0),
+          totalRevenue: toNumber(item._sum.subtotal),
           totalQuantitySold: item._sum.quantity,
           totalTransactions: item._count.productId
         };
@@ -252,16 +258,16 @@ const getSalesTrends = async (filters = {}) => {
       }
 
       groupedData[periodKey].transactionCount++;
-      groupedData[periodKey].totalRevenue += parseFloat(transaction.total || 0);
-      groupedData[periodKey].totalAmount += parseFloat(transaction.total || 0);
+      groupedData[periodKey].totalRevenue += toNumber(transaction.total);
+      groupedData[periodKey].totalAmount += toNumber(transaction.total);
     });
 
     // Calculate averages and return sorted data
     return Object.values(groupedData).map(item => ({
       period: item.period,
       transactionCount: item.transactionCount,
-      totalRevenue: parseFloat(item.totalRevenue.toFixed(2)),
-      avgOrderValue: item.transactionCount > 0 ? parseFloat((item.totalAmount / item.transactionCount).toFixed(2)) : 0
+      totalRevenue: Number(item.totalRevenue.toFixed(2)),
+      avgOrderValue: item.transactionCount > 0 ? Number((item.totalAmount / item.transactionCount).toFixed(2)) : 0
     })).sort((a, b) => a.period.localeCompare(b.period));
   } catch (error) {
     throw error;
@@ -352,7 +358,7 @@ const getFeedbackSpendingInsights = async (filters = {}) => {
             customerCount: 0
           };
         }
-        spendingByRating[feedback.rating].totalSpending += parseFloat(customer.totalSpending || 0);
+        spendingByRating[feedback.rating].totalSpending += toNumber(customer.totalSpending);
         spendingByRating[feedback.rating].customerCount++;
       });
     });
@@ -360,7 +366,7 @@ const getFeedbackSpendingInsights = async (filters = {}) => {
     const avgSpendingByRating = Object.keys(spendingByRating).map(rating => ({
       rating: parseInt(rating),
       avgSpending: spendingByRating[rating].customerCount > 0 
-        ? parseFloat((spendingByRating[rating].totalSpending / spendingByRating[rating].customerCount).toFixed(2))
+        ? Number((spendingByRating[rating].totalSpending / spendingByRating[rating].customerCount).toFixed(2))
         : 0,
       customerCount: spendingByRating[rating].customerCount
     })).sort((a, b) => a.rating - b.rating);
@@ -466,11 +472,11 @@ const getDashboardOverview = async (filters = {}) => {
     ]);
 
     return {
-      totalRevenue: parseFloat(totalRevenue._sum.total || 0),
+      totalRevenue: toNumber(totalRevenue._sum.total),
       totalTransactions,
       totalCustomers,
-      averageOrderValue: parseFloat(averageOrderValue._avg.total || 0),
-      averageRating: parseFloat(averageRating._avg.rating || 0),
+      averageOrderValue: toNumber(averageOrderValue._avg.total),
+      averageRating: toNumber(averageRating._avg.rating),
       lowStockProducts,
       recentTransactions
     };

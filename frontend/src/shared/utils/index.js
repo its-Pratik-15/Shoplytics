@@ -1,9 +1,14 @@
 // Utility functions
 export const formatCurrency = (amount) => {
+  // Ensure amount is a valid number
+  const numAmount = parseFloat(amount) || 0;
+  
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
-  }).format(amount);
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(numAmount);
 };
 
 export const formatDate = (date) => {
