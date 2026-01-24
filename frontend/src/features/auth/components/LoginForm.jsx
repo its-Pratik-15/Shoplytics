@@ -5,6 +5,7 @@ import { Eye, EyeOff, LogIn } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import Button from '../../../shared/components/ui/Button';
 import Input from '../../../shared/components/ui/Input';
+import Logo from '../../../shared/components/ui/Logo';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../shared/components/ui/Card';
 
 const LoginForm = () => {
@@ -29,8 +30,11 @@ const LoginForm = () => {
         <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md w-full space-y-8">
                 <div className="text-center">
-                    <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-                        Welcome to Shoplytics
+                    <div className="flex justify-center mb-6">
+                        <Logo size="lg" showText={true} />
+                    </div>
+                    <h2 className="text-3xl font-extrabold text-gray-900">
+                        Welcome Back
                     </h2>
                     <p className="mt-2 text-sm text-gray-600">
                         Sign in to your POS account
@@ -128,7 +132,7 @@ const LoginForm = () => {
                                 Don't have an account?{' '}
                                 <Link
                                     to="/register"
-                                    className="font-medium text-primary-600 hover:text-primary-500"
+                                    className="font-medium text-blue-600 hover:text-blue-500"
                                 >
                                     Sign up here
                                 </Link>
