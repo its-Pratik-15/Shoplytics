@@ -1,4 +1,5 @@
 import api from '../../../shared/services/api';
+import axios from 'axios';
 
 export const feedbackAPI = {
   getFeedback: async (params = {}) => {
@@ -30,4 +31,14 @@ export const feedbackAPI = {
     const response = await api.get('/feedback/stats', { params });
     return response.data;
   },
+};
+
+// Public API for customer feedback (no authentication required)
+export const submitCustomerFeedback = async (feedbackData) => {
+  const response = await axios.post(`${import.meta.env.VITE_API_URL}/feedback/public`, feedbackData, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+  return response.data;
 };
