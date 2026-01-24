@@ -5,8 +5,7 @@ import {
     ShoppingCart,
     Users,
     MessageSquare,
-    BarChart3,
-    Menu
+    BarChart3
 } from 'lucide-react';
 import Logo from '../ui/Logo';
 
@@ -14,12 +13,12 @@ const Sidebar = ({ isOpen, onClose }) => {
     const location = useLocation();
 
     const navigation = [
-        { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-        { name: 'Products', href: '/products', icon: Package },
-        { name: 'Transactions', href: '/transactions', icon: ShoppingCart },
-        { name: 'Customers', href: '/customers', icon: Users },
-        { name: 'Feedback', href: '/feedback', icon: MessageSquare },
-        { name: 'Analytics', href: '/analytics', icon: BarChart3 },
+        { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-blue-600' },
+        { name: 'Products', href: '/products', icon: Package, color: 'from-green-500 to-green-600' },
+        { name: 'Transactions', href: '/transactions', icon: ShoppingCart, color: 'from-purple-500 to-purple-600' },
+        { name: 'Customers', href: '/customers', icon: Users, color: 'from-indigo-500 to-indigo-600' },
+        { name: 'Feedback', href: '/feedback', icon: MessageSquare, color: 'from-pink-500 to-pink-600' },
+        { name: 'Analytics', href: '/analytics', icon: BarChart3, color: 'from-orange-500 to-orange-600' },
     ];
 
     const handleLinkClick = () => {
@@ -28,25 +27,26 @@ const Sidebar = ({ isOpen, onClose }) => {
 
     return (
         <>
-            {/* Sidebar */}
+            {/* Fixed Sidebar */}
             <div className={`
-                fixed inset-y-0 left-0 z-40 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out
+                fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out
                 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-                lg:translate-x-0 lg:static lg:inset-0
+                lg:translate-x-0
             `}>
-                <div className="flex flex-col h-full">
-                    {/* Shoplytics Header - Only visible on desktop */}
-                    <div className="hidden lg:flex items-center justify-center h-16 px-4 bg-blue-600">
-                        <Logo showText={true} variant="white" />
+                <div className="flex flex-col h-full bg-white shadow-2xl border-r border-gray-200">
+                    {/* Header with gradient background */}
+                    <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 p-6">
+                        <div className="flex items-center justify-center">
+                            <Logo showText={true} variant="white" className="text-xl font-bold" />
+                        </div>
+                        <div className="mt-2 text-center">
+                            <div className="text-blue-100 text-sm">Point of Sale Analytics</div>
+                        </div>
                     </div>
 
-                    {/* Mobile header spacer - matches header height */}
-                    <div className="lg:hidden h-16"></div>
-
-
                     {/* Navigation */}
-                    <nav className="flex-1 px-4 py-4 space-y-2">
-                        {navigation.map((item) => {
+                    <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+                        {navigation.map((item, index) => {
                             const isActive = location.pathname === item.href;
                             return (
                                 <Link
@@ -54,29 +54,69 @@ const Sidebar = ({ isOpen, onClose }) => {
                                     to={item.href}
                                     onClick={handleLinkClick}
                                     className={`
-                                        flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors
+                                        group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 transform hover:scale-105
                                         ${isActive
-                                            ? 'bg-blue-100 text-blue-700'
-                                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                                            ? `bg-gradient-to-r ${item.color} text-white shadow-lg`
+                                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                         }
                                     `}
+                                    style={{
+                                        animationDelay: `${index * 50}ms`,
+                                        animation: 'slideInLeft 0.6s ease-out forwards'
+                                    }}
                                 >
-                                    <item.icon className="mr-3 h-5 w-5" />
-                                    {item.name}
+                                    <div className={`
+                                        p-2 rounded-lg mr-3 transition-all duration-300
+                                        ${isActive
+                                            ? 'bg-white/20'
+                                            : 'bg-gray-100 group-hover:bg-gray-200'
+                                        }
+                                    `}>
+                                        <item.icon className={`h-5 w-5 ${isActive ? 'text-white' : 'text-gray-600 group-hover:text-gray-900'}`} />
+                                    </div>
+                                    <span className="font-semibold">{item.name}</span>
+                                    {isActive && (
+                                        <div className="ml-auto">
+                                            <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                                        </div>
+                                    )}
                                 </Link>
                             );
                         })}
                     </nav>
+
+                    {/* Footer */}
+                    <div className="p-4 border-t border-gray-200 bg-gray-50">
+                        <div className="text-center">
+                            <div className="text-xs text-gray-500 mb-2">Powered by</div>
+                            <div className="text-sm font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                                Shoplytics
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             {/* Overlay for mobile */}
             {isOpen && (
                 <div
-                    className="fixed inset-0 z-30 bg-black bg-opacity-50 lg:hidden"
+                    className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden transition-opacity duration-300"
                     onClick={onClose}
                 />
             )}
+
+            <style jsx>{`
+                @keyframes slideInLeft {
+                    from {
+                        opacity: 0;
+                        transform: translateX(-20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateX(0);
+                    }
+                }
+            `}</style>
         </>
     );
 };

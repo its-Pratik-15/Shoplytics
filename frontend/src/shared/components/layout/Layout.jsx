@@ -15,12 +15,16 @@ const Layout = ({ children }) => {
     };
 
     return (
-        <div className="min-h-screen flex bg-gray-50">
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
             <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
-            <div className="flex-1 flex flex-col min-h-screen">
+
+            {/* Main content area with proper spacing for fixed sidebar */}
+            <div className="lg:ml-64 flex flex-col min-h-screen">
                 <Header onToggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
-                <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 lg:p-6">
-                    {children}
+                <main className="flex-1 overflow-x-hidden overflow-y-auto">
+                    <div className="p-6 lg:p-8">
+                        {children}
+                    </div>
                 </main>
                 <Footer />
             </div>
