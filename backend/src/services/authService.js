@@ -90,19 +90,27 @@ const registerEmployee = async (employeeData) => {
 };
 
 const loginUser = async (loginData) => {
-  const { email, password, type = 'user' } = loginData;
+  const { email, password } = loginData;
 
   let user = null;
+  let userType = null;
   
-  // Find user or employee based on type
-  if (type === 'user') {
-    user = await prisma.user.findUnique({
-      where: { email }
-    });
-  } else if (type === 'employee') {
+  // First try to find in users table
+  user = await prisma.user.findUnique({
+    where: { email }
+  });
+  
+  if (user) {
+    userType = 'user';
+  } else {
+    // If not found in users, try employees table
     user = await prisma.employee.findUnique({
       where: { email }
     });
+    
+    if (user) {
+      userType = 'employee';
+    }
   }
 
   if (!user) {
@@ -120,10 +128,13 @@ const loginUser = async (loginData) => {
   const { password: _, ...userWithoutPassword } = user;
 
   // Generate token (7 days expiry)
-  const token = generateToken(userWithoutPassword, type);
+  const token = generateToken(userWithoutPassword, userType);
 
   return {
-    user: userWithoutPassword,
+    user: {
+      ...userWithoutPassword,
+      userType // Add userType to response for frontend permissions
+    },
     token,
     expiresIn: 7 * 24 * 60 * 60 // 7 days in seconds
   };

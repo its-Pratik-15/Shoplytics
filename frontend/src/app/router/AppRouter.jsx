@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { LoginPage, RegisterPage, ProtectedRoute } from '../../features/auth';
+import { LandingPage } from '../../features/landing';
 import { DashboardPage } from '../../features/dashboard';
 import { ProductsPage, ProductEditPage } from '../../features/products';
 import { CustomersPage } from '../../features/customers';
@@ -10,6 +11,7 @@ import { AnalyticsPage, MostSellingProductsPage, HighestRevenueProductsPage } fr
 export const AppRouter = () => {
     return (
         <Routes>
+            <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route
@@ -92,7 +94,10 @@ export const AppRouter = () => {
                     </ProtectedRoute>
                 }
             />
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route
+                path="/*"
+                element={<LandingPage />} 
+            />
         </Routes>
     );
 };

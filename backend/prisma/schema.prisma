@@ -23,6 +23,9 @@ model User {
   // Relations
   transactions Transaction[]
 
+  @@index([email])
+  @@index([role])
+  @@index([createdAt])
   @@map("users")
 }
 
@@ -38,6 +41,9 @@ model Employee {
   // Relations
   transactions Transaction[]
 
+  @@index([email])
+  @@index([role])
+  @@index([createdAt])
   @@map("employees")
 }
 
@@ -57,6 +63,10 @@ model Product {
   // Relations
   transactionItems TransactionItem[]
 
+  @@index([name])
+  @@index([category])
+  @@index([sku])
+  @@index([createdAt])
   @@map("products")
 }
 
@@ -75,6 +85,11 @@ model Customer {
   transactions Transaction[]
   feedback     Feedback[]
 
+  @@index([email])
+  @@index([phone])
+  @@index([name])
+  @@index([isNewCustomer])
+  @@index([createdAt])
   @@map("customers")
 }
 
@@ -97,6 +112,13 @@ model Transaction {
   user     User?     @relation(fields: [userId], references: [id])
   items    TransactionItem[]
 
+  @@index([customerId])
+  @@index([employeeId])
+  @@index([userId])
+  @@index([status])
+  @@index([paymentMode])
+  @@index([createdAt])
+  @@index([createdAt, status])
   @@map("transactions")
 }
 
@@ -114,6 +136,9 @@ model TransactionItem {
   transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
   product     Product     @relation(fields: [productId], references: [id])
 
+  @@index([transactionId])
+  @@index([productId])
+  @@index([transactionId, productId])
   @@map("transaction_items")
 }
 
@@ -130,6 +155,9 @@ model Feedback {
   // Relations
   customer Customer @relation(fields: [customerId], references: [id])
 
+  @@index([customerId])
+  @@index([rating])
+  @@index([createdAt])
   @@map("feedback")
 }
 
