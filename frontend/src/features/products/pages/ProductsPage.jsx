@@ -1,24 +1,29 @@
 import { useState, useEffect } from 'react';
-import { Layout } from '../../../shared/components/layout/Layout';
-import { Button } from '../../../shared/components/ui/Button';
-import { Input } from '../../../shared/components/ui/Input';
+import { useNavigate } from 'react-router-dom';
+import Layout from '../../../shared/components/layout/Layout';
+import Button from '../../../shared/components/ui/Button';
+import Input from '../../../shared/components/ui/Input';
 import { ProductCard } from '../components/ProductCard';
-import { ProductForm } from '../components/ProductForm';
 import { productsAPI } from '../services/products.api';
 import { debounce } from '../../../shared/utils';
+import { useAuth } from '../../auth/hooks/useAuth';
 import toast from 'react-hot-toast';
 
 export const ProductsPage = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [showForm, setShowForm] = useState(false);
-    const [editingProduct, setEditingProduct] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('');
     const [categories, setCategories] = useState([]);
+    const navigate = useNavigate();
+    const { user, hasRole } = useAuth();
+
+    // Check if user can manage products (OWNER, ADMIN, MANAGER)
+    const canManageProducts = hasRole(['OWNER', 'ADMIN', 'MANAGER']);
 
     useEffect(() => {
         fetchProducts();
+        fetchCategories(); // Fetch categories separately
     }, []);
 
     useEffect(() => {
@@ -39,10 +44,6 @@ export const ProductsPage = () => {
             const response = await productsAPI.getProducts(params);
             if (response.success) {
                 setProducts(response.data);
-
-                // Extract unique categories
-                const uniqueCategories = [...new Set(response.data.map(p => p.category))];
-                setCategories(uniqueCategories);
             }
         } catch (error) {
             toast.error('Failed to fetch products');
@@ -51,37 +52,29 @@ export const ProductsPage = () => {
         }
     };
 
-    const handleAddProduct = () => {
-        setEditingProduct(null);
-        setShowForm(true);
+    const fetchCategories = async () => {
+        try {
+            // Fetch all products to get all categories
+            const response = await productsAPI.getProducts({});
+            if (response.success) {
+                const uniqueCategories = [...new Set(response.data.map(p => p.category))];
+                setCategories(uniqueCategories);
+            }
+        } catch (error) {
+            console.error('Failed to fetch categories:', error);
+        }
     };
 
-    const handleEditProduct = (product) => {
-        setEditingProduct(product);
-        setShowForm(true);
+    const handleAddProduct = () => {
+        if (!canManageProducts) {
+            toast.error('You do not have permission to add products');
+            return;
+        }
+        navigate('/products/new');
     };
 
     const handleDeleteProduct = (productId) => {
         setProducts(products.filter(p => p.id !== productId));
-    };
-
-    const handleFormSuccess = (productData) => {
-        if (editingProduct) {
-            // Update existing product
-            setProducts(products.map(p =>
-                p.id === editingProduct.id ? productData : p
-            ));
-        } else {
-            // Add new product
-            setProducts([productData, ...products]);
-        }
-        setShowForm(false);
-        setEditingProduct(null);
-    };
-
-    const handleFormCancel = () => {
-        setShowForm(false);
-        setEditingProduct(null);
     };
 
     const lowStockProducts = products.filter(p => p.quantity <= 10);
@@ -97,9 +90,11 @@ export const ProductsPage = () => {
                             Manage your product inventory ({products.length} products)
                         </p>
                     </div>
-                    <Button onClick={handleAddProduct}>
-                        Add Product
-                    </Button>
+                    {canManageProducts && (
+                        <Button onClick={handleAddProduct}>
+                            Add Product
+                        </Button>
+                    )}
                 </div>
 
                 {/* Low Stock Alert */}
@@ -121,15 +116,6 @@ export const ProductsPage = () => {
                             </div>
                         </div>
                     </div>
-                )}
-
-                {/* Product Form */}
-                {showForm && (
-                    <ProductForm
-                        product={editingProduct}
-                        onSuccess={handleFormSuccess}
-                        onCancel={handleFormCancel}
-                    />
                 )}
 
                 {/* Filters */}
@@ -171,7 +157,7 @@ export const ProductsPage = () => {
                         <p className="mt-1 text-sm text-gray-500">
                             {searchTerm || categoryFilter ? 'Try adjusting your search filters.' : 'Get started by adding your first product.'}
                         </p>
-                        {!searchTerm && !categoryFilter && (
+                        {!searchTerm && !categoryFilter && canManageProducts && (
                             <div className="mt-6">
                                 <Button onClick={handleAddProduct}>
                                     Add Product
@@ -185,8 +171,8 @@ export const ProductsPage = () => {
                             <ProductCard
                                 key={product.id}
                                 product={product}
-                                onEdit={handleEditProduct}
                                 onDelete={handleDeleteProduct}
+                                canManage={canManageProducts}
                             />
                         ))}
                     </div>

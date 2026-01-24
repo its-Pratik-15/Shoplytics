@@ -35,26 +35,26 @@ router.get('/low-stock',
 // GET /api/products/:id - Get product by ID (public)
 router.get('/:id', productController.getProductById);
 
-// POST /api/products - Create product (Admin only)
+// POST /api/products - Create product (Admin/Manager only)
 router.post('/', 
   authenticateToken, 
-  requireRole(['OWNER', 'ADMIN']), 
+  requireRole(['OWNER', 'ADMIN', 'MANAGER']), 
   upload.array('images', 5),
   productController.createProduct
 );
 
-// PUT /api/products/:id - Update product (Admin only)
+// PUT /api/products/:id - Update product (Admin/Manager only)
 router.put('/:id', 
   authenticateToken, 
-  requireRole(['OWNER', 'ADMIN']), 
+  requireRole(['OWNER', 'ADMIN', 'MANAGER']), 
   upload.array('images', 5),
   productController.updateProduct
 );
 
-// DELETE /api/products/:id - Delete product (Admin only)
+// DELETE /api/products/:id - Delete product (Admin/Manager only)
 router.delete('/:id', 
   authenticateToken, 
-  requireRole(['OWNER', 'ADMIN']), 
+  requireRole(['OWNER', 'ADMIN', 'MANAGER']), 
   productController.deleteProduct
 );
 

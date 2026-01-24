@@ -122,21 +122,36 @@ const updateProduct = async (productId, updateData, imageFiles = []) => {
     const existingProduct = await getProductById(productId);
 
     // Upload new images if provided
-    let newImageUrls = [];
+    let imageUrls = existingProduct.imageUrls || [];
     if (imageFiles && imageFiles.length > 0) {
       const uploadResults = await cloudinaryService.uploadMultipleImages(imageFiles);
-      newImageUrls = uploadResults.map(result => result.url);
+      const newImageUrls = uploadResults.map(result => result.url);
+      
+      // Replace existing images with new ones
+      imageUrls = newImageUrls;
+      
+      // Delete old images from Cloudinary
+      if (existingProduct.imageUrls && existingProduct.imageUrls.length > 0) {
+        try {
+          const publicIds = existingProduct.imageUrls.map(url => {
+            const parts = url.split('/');
+            const filename = parts[parts.length - 1];
+            return `pos-products/${filename.split('.')[0]}`;
+          });
+          await cloudinaryService.deleteMultipleImages(publicIds);
+        } catch (deleteError) {
+          console.error('Failed to delete old images:', deleteError);
+          // Continue with update even if old image cleanup fails
+        }
+      }
     }
-
-    // Combine existing and new image URLs
-    const imageUrls = [...existingProduct.imageUrls, ...newImageUrls];
 
     // Update product
     const updatedProduct = await prisma.product.update({
       where: { id: productId },
       data: {
         ...updateData,
-        ...(newImageUrls.length > 0 && { imageUrls })
+        ...(imageFiles.length > 0 && { imageUrls })
       }
     });
 

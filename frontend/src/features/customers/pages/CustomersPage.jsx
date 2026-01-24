@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Layout } from '../../../shared/components/layout/Layout';
-import { Button } from '../../../shared/components/ui/Button';
-import { Input } from '../../../shared/components/ui/Input';
+import Layout from '../../../shared/components/layout/Layout';
+import Button from '../../../shared/components/ui/Button';
+import Input from '../../../shared/components/ui/Input';
 import { CustomerCard } from '../components/CustomerCard';
 import { CustomerForm } from '../components/CustomerForm';
 import { customersAPI } from '../services/customers.api';

@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { LoginPage, RegisterPage, ProtectedRoute } from '../../features/auth';
 import { DashboardPage } from '../../features/dashboard';
-import { ProductsPage } from '../../features/products';
+import { ProductsPage, ProductEditPage } from '../../features/products';
 import { CustomersPage } from '../../features/customers';
 
 export const AppRouter = () => {
@@ -22,6 +22,22 @@ export const AppRouter = () => {
                 element={
                     <ProtectedRoute>
                         <ProductsPage />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/products/new"
+                element={
+                    <ProtectedRoute>
+                        <ProductEditPage />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/products/:id/edit"
+                element={
+                    <ProtectedRoute>
+                        <ProductEditPage />
                     </ProtectedRoute>
                 }
             />

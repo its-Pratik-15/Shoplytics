@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Card } from '../../../shared/components/ui/Card';
-import { Button } from '../../../shared/components/ui/Button';
-import { Input } from '../../../shared/components/ui/Input';
+import Button from '../../../shared/components/ui/Button';
+import Input from '../../../shared/components/ui/Input';
 import { customersAPI } from '../services/customers.api';
 import toast from 'react-hot-toast';
 

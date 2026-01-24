@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card } from '../../../shared/components/ui/Card';
-import { Button } from '../../../shared/components/ui/Button';
+import Button from '../../../shared/components/ui/Button';
 import { formatCurrency } from '../../../shared/utils';
 import { customersAPI } from '../services/customers.api';
 import toast from 'react-hot-toast';
