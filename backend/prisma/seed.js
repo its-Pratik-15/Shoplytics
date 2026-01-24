@@ -148,29 +148,25 @@ async function main() {
       name: 'Amit Patel',
       email: 'amit.patel@gmail.com',
       phone: '+91-9876543210',
-      address: '15, MG Road, Bangalore, Karnataka 560001',
-      isNewCustomer: false // Old customer
+      address: '15, MG Road, Bangalore, Karnataka 560001'
     },
     {
       name: 'Sunita Devi',
       email: 'sunita.devi@yahoo.com',
       phone: '+91-8765432109',
-      address: '42, Connaught Place, New Delhi, Delhi 110001',
-      isNewCustomer: true // New customer
+      address: '42, Connaught Place, New Delhi, Delhi 110001'
     },
     {
       name: 'Vikram Singh',
       email: 'vikram.singh@hotmail.com',
       phone: '+91-7654321098',
-      address: '78, Park Street, Kolkata, West Bengal 700016',
-      isNewCustomer: false // Old customer
+      address: '78, Park Street, Kolkata, West Bengal 700016'
     },
     {
       name: 'Meera Nair',
       email: 'meera.nair@gmail.com',
       phone: '+91-6543210987',
-      address: '23, Marine Drive, Mumbai, Maharashtra 400002',
-      isNewCustomer: true // New customer
+      address: '23, Marine Drive, Mumbai, Maharashtra 400002'
     }
   ];
 

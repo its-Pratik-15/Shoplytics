@@ -78,7 +78,7 @@ export const CustomersPage = () => {
     };
 
     const vipCustomers = customers.filter(c => (c.totalSpending || 0) >= 10000);
-    const totalSpending = customers.reduce((sum, c) => sum + (parseFloat(c.totalSpending) || 0), 0);
+    const totalSpending = customers.reduce((sum, c) => sum + (c.totalSpending || 0), 0);
 
     return (
         <Layout>

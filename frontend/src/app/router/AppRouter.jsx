@@ -3,9 +3,6 @@ import { LoginPage, RegisterPage, ProtectedRoute } from '../../features/auth';
 import { DashboardPage } from '../../features/dashboard';
 import { ProductsPage, ProductEditPage } from '../../features/products';
 import { CustomersPage } from '../../features/customers';
-import { TransactionsPage } from '../../features/transactions';
-import { FeedbackPage } from '../../features/feedback';
-import { AnalyticsPage } from '../../features/analytics';
 
 export const AppRouter = () => {
     return (
@@ -49,30 +46,6 @@ export const AppRouter = () => {
                 element={
                     <ProtectedRoute>
                         <CustomersPage />
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/transactions"
-                element={
-                    <ProtectedRoute>
-                        <TransactionsPage />
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/feedback"
-                element={
-                    <ProtectedRoute>
-                        <FeedbackPage />
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/analytics"
-                element={
-                    <ProtectedRoute>
-                        <AnalyticsPage />
                     </ProtectedRoute>
                 }
             />

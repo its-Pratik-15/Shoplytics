@@ -250,7 +250,7 @@ export const AnalyticsPage = () => {
                 {customerAnalytics && (
                     <Card className="p-6">
                         <h3 className="text-lg font-medium text-gray-900 mb-4">Customer Analytics</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                             <div className="text-center">
                                 <p className="text-2xl font-bold text-blue-600">
                                     {customerAnalytics.totalCustomers}
@@ -259,18 +259,6 @@ export const AnalyticsPage = () => {
                             </div>
                             <div className="text-center">
                                 <p className="text-2xl font-bold text-green-600">
-                                    {customerAnalytics.newCustomers}
-                                </p>
-                                <p className="text-sm text-gray-600">New Customers</p>
-                            </div>
-                            <div className="text-center">
-                                <p className="text-2xl font-bold text-indigo-600">
-                                    {customerAnalytics.oldCustomers}
-                                </p>
-                                <p className="text-sm text-gray-600">Old Customers</p>
-                            </div>
-                            <div className="text-center">
-                                <p className="text-2xl font-bold text-teal-600">
                                     {customerAnalytics.customersWithPurchases}
                                 </p>
                                 <p className="text-sm text-gray-600">Active Customers</p>

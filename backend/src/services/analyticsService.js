@@ -149,24 +149,12 @@ const getCustomerAnalytics = async (filters = {}) => {
 
     const [
       totalCustomers,
-      newCustomers,
-      oldCustomers,
       customersWithPurchases,
       topCustomers,
       repeatCustomers
     ] = await Promise.all([
       // Total customers
       prisma.customer.count(),
-      
-      // New customers (isNewCustomer = true)
-      prisma.customer.count({
-        where: { isNewCustomer: true }
-      }),
-      
-      // Old customers (isNewCustomer = false)
-      prisma.customer.count({
-        where: { isNewCustomer: false }
-      }),
       
       // Customers who made purchases in the period
       prisma.customer.count({
@@ -193,7 +181,6 @@ const getCustomerAnalytics = async (filters = {}) => {
           name: true,
           email: true,
           totalSpending: true,
-          isNewCustomer: true,
           _count: {
             select: {
               transactions: true
@@ -217,8 +204,6 @@ const getCustomerAnalytics = async (filters = {}) => {
 
     return {
       totalCustomers,
-      newCustomers,
-      oldCustomers,
       customersWithPurchases,
       topCustomers,
       repeatCustomers,
