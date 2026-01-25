@@ -7,6 +7,7 @@ import { CustomersPage } from '../../features/customers';
 import { TransactionsPage } from '../../features/transactions';
 import { FeedbackPage } from '../../features/feedback';
 import { AnalyticsPage, MostSellingProductsPage, HighestRevenueProductsPage } from '../../features/analytics';
+import { BillsPage, POSPage } from '../../features/bills';
 import CustomerFeedbackPage from '../../features/feedback/pages/CustomerFeedbackPage';
 import ScrollToTop from '../../shared/components/ScrollToTop';
 import { useAuth } from '../../features/auth/hooks/useAuth';
@@ -26,6 +27,17 @@ export const AppRouter = () => {
         );
     }
 
+    // Helper function to get default route based on user role
+    const getDefaultRoute = () => {
+        if (!user) return '/';
+
+        // Employees (CASHIER) go to Checkout Counter, others go to Dashboard
+        if (user.role === 'CASHIER') {
+            return '/pos';
+        }
+        return '/dashboard';
+    };
+
     return (
         <>
             <ScrollToTop />
@@ -33,29 +45,45 @@ export const AppRouter = () => {
                 {/* Public routes */}
                 <Route path="/customer-feedback" element={<CustomerFeedbackPage />} />
 
-                {/* Auth routes - redirect to dashboard if already authenticated */}
+                {/* Auth routes - redirect to appropriate page if already authenticated */}
                 <Route
                     path="/login"
-                    element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />}
+                    element={user ? <Navigate to={getDefaultRoute()} replace /> : <LoginPage />}
                 />
                 <Route
                     path="/register"
-                    element={user ? <Navigate to="/dashboard" replace /> : <RegisterPage />}
+                    element={user ? <Navigate to={getDefaultRoute()} replace /> : <RegisterPage />}
                 />
 
                 {/* Protected routes */}
                 <Route
                     path="/dashboard"
                     element={
-                        <ProtectedRoute>
+                        <ProtectedRoute requiredRoles={['OWNER', 'ADMIN', 'MANAGER']}>
                             <DashboardPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/pos"
+                    element={
+                        <ProtectedRoute>
+                            <POSPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/bills"
+                    element={
+                        <ProtectedRoute>
+                            <BillsPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
                     path="/products"
                     element={
-                        <ProtectedRoute>
+                        <ProtectedRoute requiredRoles={['OWNER', 'ADMIN', 'MANAGER']}>
                             <ProductsPage />
                         </ProtectedRoute>
                     }
@@ -63,7 +91,7 @@ export const AppRouter = () => {
                 <Route
                     path="/products/new"
                     element={
-                        <ProtectedRoute>
+                        <ProtectedRoute requiredRoles={['OWNER', 'ADMIN', 'MANAGER']}>
                             <ProductEditPage />
                         </ProtectedRoute>
                     }
@@ -71,7 +99,7 @@ export const AppRouter = () => {
                 <Route
                     path="/products/:id/edit"
                     element={
-                        <ProtectedRoute>
+                        <ProtectedRoute requiredRoles={['OWNER', 'ADMIN', 'MANAGER']}>
                             <ProductEditPage />
                         </ProtectedRoute>
                     }
@@ -87,7 +115,7 @@ export const AppRouter = () => {
                 <Route
                     path="/transactions"
                     element={
-                        <ProtectedRoute>
+                        <ProtectedRoute requiredRoles={['OWNER', 'ADMIN', 'MANAGER']}>
                             <TransactionsPage />
                         </ProtectedRoute>
                     }
@@ -95,7 +123,7 @@ export const AppRouter = () => {
                 <Route
                     path="/feedback"
                     element={
-                        <ProtectedRoute>
+                        <ProtectedRoute requiredRoles={['OWNER', 'ADMIN', 'MANAGER']}>
                             <FeedbackPage />
                         </ProtectedRoute>
                     }
@@ -103,7 +131,7 @@ export const AppRouter = () => {
                 <Route
                     path="/analytics"
                     element={
-                        <ProtectedRoute>
+                        <ProtectedRoute requiredRoles={['OWNER', 'ADMIN', 'MANAGER']}>
                             <AnalyticsPage />
                         </ProtectedRoute>
                     }
@@ -111,7 +139,7 @@ export const AppRouter = () => {
                 <Route
                     path="/analytics/most-selling"
                     element={
-                        <ProtectedRoute>
+                        <ProtectedRoute requiredRoles={['OWNER', 'ADMIN', 'MANAGER']}>
                             <MostSellingProductsPage />
                         </ProtectedRoute>
                     }
@@ -119,22 +147,22 @@ export const AppRouter = () => {
                 <Route
                     path="/analytics/highest-revenue"
                     element={
-                        <ProtectedRoute>
+                        <ProtectedRoute requiredRoles={['OWNER', 'ADMIN', 'MANAGER']}>
                             <HighestRevenueProductsPage />
                         </ProtectedRoute>
                     }
                 />
 
-                {/* Root route - redirect based on authentication */}
+                {/* Root route - redirect based on authentication and role */}
                 <Route
                     path="/"
-                    element={user ? <Navigate to="/dashboard" replace /> : <LandingPage />}
+                    element={user ? <Navigate to={getDefaultRoute()} replace /> : <LandingPage />}
                 />
 
-                {/* Catch all route - redirect based on authentication */}
+                {/* Catch all route - redirect based on authentication and role */}
                 <Route
                     path="*"
-                    element={user ? <Navigate to="/dashboard" replace /> : <Navigate to="/" replace />}
+                    element={user ? <Navigate to={getDefaultRoute()} replace /> : <Navigate to="/" replace />}
                 />
             </Routes>
         </>

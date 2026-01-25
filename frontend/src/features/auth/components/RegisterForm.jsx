@@ -16,9 +16,6 @@ const RegisterForm = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Get the intended destination from location state, default to dashboard
-    const from = location.state?.from?.pathname || '/dashboard';
-
     const {
         register,
         handleSubmit,
@@ -32,8 +29,17 @@ const RegisterForm = () => {
         const { confirmPassword, ...userData } = data;
         const result = await registerUser(userData);
         if (result.success) {
-            // Navigate to the intended destination or dashboard
-            navigate(from, { replace: true });
+            // Get intended destination from location state
+            const from = location.state?.from?.pathname;
+
+            // If there's an intended destination, go there
+            if (from) {
+                navigate(from, { replace: true });
+            } else {
+                // Otherwise, redirect based on role
+                const defaultRoute = result.user.role === 'CASHIER' ? '/pos' : '/dashboard';
+                navigate(defaultRoute, { replace: true });
+            }
         }
     };
 

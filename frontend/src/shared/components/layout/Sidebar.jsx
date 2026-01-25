@@ -5,25 +5,36 @@ import {
     ShoppingCart,
     Users,
     MessageSquare,
-    BarChart3
+    BarChart3,
+    Receipt,
+    Calculator
 } from 'lucide-react';
 import Logo from '../ui/Logo';
+import { useAuth } from '../../../features/auth/hooks/useAuth';
 
 const Sidebar = ({ isOpen, onClose }) => {
     const location = useLocation();
+    const { hasRole } = useAuth();
 
     const navigation = [
-        { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-blue-600' },
-        { name: 'Products', href: '/products', icon: Package, color: 'from-green-500 to-green-600' },
-        { name: 'Transactions', href: '/transactions', icon: ShoppingCart, color: 'from-purple-500 to-purple-600' },
-        { name: 'Customers', href: '/customers', icon: Users, color: 'from-indigo-500 to-indigo-600' },
-        { name: 'Feedback', href: '/feedback', icon: MessageSquare, color: 'from-pink-500 to-pink-600' },
-        { name: 'Analytics', href: '/analytics', icon: BarChart3, color: 'from-orange-500 to-orange-600' },
+        { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-blue-600', roles: ['OWNER', 'ADMIN', 'MANAGER'] },
+        { name: 'Checkout Counter', href: '/pos', icon: Calculator, color: 'from-emerald-500 to-emerald-600', roles: ['OWNER', 'ADMIN', 'MANAGER', 'CASHIER'] },
+        { name: 'Bills', href: '/bills', icon: Receipt, color: 'from-teal-500 to-teal-600', roles: ['OWNER', 'ADMIN', 'MANAGER', 'CASHIER'] },
+        { name: 'Products', href: '/products', icon: Package, color: 'from-green-500 to-green-600', roles: ['OWNER', 'ADMIN', 'MANAGER'] },
+        { name: 'Transactions', href: '/transactions', icon: ShoppingCart, color: 'from-purple-500 to-purple-600', roles: ['OWNER', 'ADMIN', 'MANAGER'] },
+        { name: 'Customers', href: '/customers', icon: Users, color: 'from-indigo-500 to-indigo-600', roles: ['OWNER', 'ADMIN', 'MANAGER', 'CASHIER'] },
+        { name: 'Feedback', href: '/feedback', icon: MessageSquare, color: 'from-pink-500 to-pink-600', roles: ['OWNER', 'ADMIN', 'MANAGER'] },
+        { name: 'Analytics', href: '/analytics', icon: BarChart3, color: 'from-orange-500 to-orange-600', roles: ['OWNER', 'ADMIN', 'MANAGER'] },
     ];
 
     const handleLinkClick = () => {
         onClose(); // Close sidebar on mobile when link is clicked
     };
+
+    // Filter navigation items based on user role
+    const filteredNavigation = navigation.filter(item =>
+        hasRole(item.roles)
+    );
 
     return (
         <>
@@ -46,7 +57,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
                     {/* Navigation */}
                     <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-                        {navigation.map((item, index) => {
+                        {filteredNavigation.map((item, index) => {
                             const isActive = location.pathname === item.href;
                             return (
                                 <Link

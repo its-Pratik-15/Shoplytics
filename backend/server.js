@@ -22,7 +22,7 @@ const analyticsRoutes = require('./src/routes/analytics');
 const errorHandler = require('./src/middlewares/errorHandler');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 // Security middleware
 app.use(helmet());

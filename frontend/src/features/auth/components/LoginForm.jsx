@@ -15,12 +15,6 @@ const LoginForm = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Get the intended destination from location state, default to dashboard
-    const from = location.state?.from?.pathname || '/dashboard';
-
-    console.log('LoginForm - location.state:', location.state);
-    console.log('LoginForm - from:', from);
-
     const {
         register,
         handleSubmit,
@@ -31,9 +25,17 @@ const LoginForm = () => {
     const onSubmit = async (data) => {
         const result = await login(data);
         if (result.success) {
-            console.log('Login successful, navigating to:', from);
-            // Navigate to the intended destination or dashboard
-            navigate(from, { replace: true });
+            // Get intended destination from location state
+            const from = location.state?.from?.pathname;
+
+            // If there's an intended destination, go there
+            if (from) {
+                navigate(from, { replace: true });
+            } else {
+                // Otherwise, redirect based on role
+                const defaultRoute = result.user.role === 'CASHIER' ? '/pos' : '/dashboard';
+                navigate(defaultRoute, { replace: true });
+            }
         }
     };
 
