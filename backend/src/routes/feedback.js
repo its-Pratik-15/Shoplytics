@@ -29,6 +29,11 @@ router.get('/:id',
   feedbackController.getFeedbackById
 );
 
+// POST /api/feedback/public - Public feedback submission (no authentication required)
+router.post('/public', 
+  feedbackController.createPublicFeedback
+);
+
 // POST /api/feedback - Create new feedback (Public - customers can leave feedback)
 router.post('/', 
   feedbackController.createFeedback

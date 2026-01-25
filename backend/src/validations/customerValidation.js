@@ -12,20 +12,24 @@ const validateCreateCustomer = (data) => {
     throw createError('VALIDATION_ERROR', 'Customer name must be less than 100 characters', 400);
   }
 
-  // Validate optional email
-  if (email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      throw createError('VALIDATION_ERROR', 'Invalid email format', 400);
-    }
+  // Validate required email
+  if (!email || typeof email !== 'string' || email.trim().length === 0) {
+    throw createError('VALIDATION_ERROR', 'Customer email is required', 400);
   }
 
-  // Validate optional phone
-  if (phone) {
-    const phoneRegex = /^[+]?[\d\s\-\(\)]{10,15}$/;
-    if (!phoneRegex.test(phone)) {
-      throw createError('VALIDATION_ERROR', 'Invalid phone number format', 400);
-    }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    throw createError('VALIDATION_ERROR', 'Invalid email format', 400);
+  }
+
+  // Validate required phone
+  if (!phone || typeof phone !== 'string' || phone.trim().length === 0) {
+    throw createError('VALIDATION_ERROR', 'Customer phone number is required', 400);
+  }
+
+  const phoneRegex = /^[+]?[\d\s\-\(\)]{10,15}$/;
+  if (!phoneRegex.test(phone)) {
+    throw createError('VALIDATION_ERROR', 'Invalid phone number format', 400);
   }
 
   // Validate optional address
@@ -35,8 +39,8 @@ const validateCreateCustomer = (data) => {
 
   return {
     name: name.trim(),
-    email: email?.trim() || null,
-    phone: phone?.trim() || null,
+    email: email.trim(),
+    phone: phone.trim(),
     address: address?.trim() || null
   };
 };

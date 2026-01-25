@@ -30,4 +30,20 @@ export const analyticsAPI = {
     const response = await api.get('/analytics/feedback/insights', { params });
     return response.data;
   },
+
+  // Chart-specific endpoints
+  getCategorySalesData: async (params = {}) => {
+    const response = await api.get('/analytics/charts/categories', { params });
+    return response.data;
+  },
+
+  getCustomerSegmentationData: async (params = {}) => {
+    const response = await api.get('/analytics/charts/customer-segmentation', { params });
+    return response.data;
+  },
+
+  getTopProductsChartData: async (params = {}) => {
+    const response = await api.get('/analytics/charts/top-products', { params });
+    return response.data;
+  },
 };

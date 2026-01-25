@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Eye, EyeOff, LogIn } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import Button from '../../../shared/components/ui/Button';
@@ -13,6 +13,13 @@ const LoginForm = () => {
     const [showPassword, setShowPassword] = useState(false);
     const { login, loading } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // Get the intended destination from location state, default to dashboard
+    const from = location.state?.from?.pathname || '/dashboard';
+
+    console.log('LoginForm - location.state:', location.state);
+    console.log('LoginForm - from:', from);
 
     const {
         register,
@@ -24,7 +31,9 @@ const LoginForm = () => {
     const onSubmit = async (data) => {
         const result = await login(data);
         if (result.success) {
-            navigate('/dashboard');
+            console.log('Login successful, navigating to:', from);
+            // Navigate to the intended destination or dashboard
+            navigate(from, { replace: true });
         }
     };
 

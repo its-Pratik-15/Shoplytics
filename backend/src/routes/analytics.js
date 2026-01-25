@@ -46,4 +46,22 @@ router.get('/feedback/insights',
   analyticsController.getFeedbackSpendingInsights
 );
 
+// GET /api/analytics/charts/categories - Get category sales data for charts
+router.get('/charts/categories', 
+  ...analyticsAuth,
+  analyticsController.getCategorySalesData
+);
+
+// GET /api/analytics/charts/customer-segmentation - Get customer segmentation data for charts
+router.get('/charts/customer-segmentation', 
+  ...analyticsAuth,
+  analyticsController.getCustomerSegmentationData
+);
+
+// GET /api/analytics/charts/top-products - Get top products chart data
+router.get('/charts/top-products', 
+  ...analyticsAuth,
+  analyticsController.getTopProductsChartData
+);
+
 module.exports = router;

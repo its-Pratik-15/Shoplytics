@@ -1,6 +1,57 @@
 const prisma = require('../../prisma/db');
 const { createError } = require('../utils/errors');
 
+const createPublicFeedback = async (feedbackData) => {
+  try {
+    const { customerName, email, phone, rating, comment } = feedbackData;
+
+    // Find or create customer
+    let customer;
+    
+    if (email) {
+      // Try to find existing customer by email
+      customer = await prisma.customer.findUnique({
+        where: { email }
+      });
+    }
+    
+    if (!customer) {
+      // Create new customer
+      customer = await prisma.customer.create({
+        data: {
+          name: customerName,
+          email: email || null,
+          phone: phone || null,
+          isNewCustomer: true
+        }
+      });
+    }
+
+    // Create feedback
+    const feedback = await prisma.feedback.create({
+      data: {
+        customerId: customer.id,
+        rating,
+        comment
+      },
+      include: {
+        customer: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            isNewCustomer: true
+          }
+        }
+      }
+    });
+
+    return feedback;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const createFeedback = async (feedbackData) => {
   try {
     const { customerId, rating, comment } = feedbackData;
@@ -318,6 +369,7 @@ const getFeedbackByCustomer = async (customerId) => {
 };
 
 module.exports = {
+  createPublicFeedback,
   createFeedback,
   getAllFeedback,
   getFeedbackById,

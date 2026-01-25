@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '../../../shared/components/layout/Layout';
-import { Card } from '../../../shared/components/ui/Card';
+import { LineChart, BarChart, DoughnutChart } from '../../../shared/components/charts';
 import { analyticsAPI } from '../services/analytics.api';
 import { formatCurrency, formatDate } from '../../../shared/utils';
 import { useAuth } from '../../auth/hooks/useAuth';
@@ -17,7 +17,8 @@ import {
     BarChart3,
     ArrowUpRight,
     ArrowDownRight,
-    Eye
+    Eye,
+    PieChart
 } from 'lucide-react';
 
 export const AnalyticsPage = () => {
@@ -25,8 +26,10 @@ export const AnalyticsPage = () => {
     const [mostSellingProducts, setMostSellingProducts] = useState([]);
     const [highestRevenueProducts, setHighestRevenueProducts] = useState([]);
     const [customerAnalytics, setCustomerAnalytics] = useState(null);
-    const [salesTrends, setSalesTrends] = useState([]);
-    const [feedbackInsights, setFeedbackInsights] = useState(null);
+    const [salesTrends, setSalesTrends] = useState(null);
+    const [categorySalesData, setCategorySalesData] = useState(null);
+    const [customerSegmentationData, setCustomerSegmentationData] = useState(null);
+    const [topProductsChartData, setTopProductsChartData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [dateRange, setDateRange] = useState('30'); // days
 
@@ -58,14 +61,18 @@ export const AnalyticsPage = () => {
                 highestRevenueRes,
                 customerRes,
                 salesTrendsRes,
-                feedbackRes
+                categorySalesRes,
+                customerSegmentationRes,
+                topProductsRes
             ] = await Promise.all([
                 analyticsAPI.getDashboardOverview(params),
                 analyticsAPI.getMostSellingProducts({ ...params, limit: 5 }),
                 analyticsAPI.getHighestRevenueProducts({ ...params, limit: 5 }),
                 analyticsAPI.getCustomerAnalytics(params),
                 analyticsAPI.getSalesTrends({ ...params, period: 'daily' }),
-                analyticsAPI.getFeedbackSpendingInsights(params)
+                analyticsAPI.getCategorySalesData(params),
+                analyticsAPI.getCustomerSegmentationData(params),
+                analyticsAPI.getTopProductsChartData({ ...params, limit: 8, type: 'revenue' })
             ]);
 
             if (overviewRes.success) setOverview(overviewRes.data);
@@ -73,7 +80,9 @@ export const AnalyticsPage = () => {
             if (highestRevenueRes.success) setHighestRevenueProducts(highestRevenueRes.data);
             if (customerRes.success) setCustomerAnalytics(customerRes.data);
             if (salesTrendsRes.success) setSalesTrends(salesTrendsRes.data);
-            if (feedbackRes.success) setFeedbackInsights(feedbackRes.data);
+            if (categorySalesRes.success) setCategorySalesData(categorySalesRes.data);
+            if (customerSegmentationRes.success) setCustomerSegmentationData(customerSegmentationRes.data);
+            if (topProductsRes.success) setTopProductsChartData(topProductsRes.data);
 
         } catch (error) {
             toast.error('Failed to fetch analytics data');
@@ -244,6 +253,112 @@ export const AnalyticsPage = () => {
 
                 {/* Charts Row */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {/* Sales Trends Chart */}
+                    {salesTrends && salesTrends.chartData && (
+                        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow duration-300">
+                            <div className="flex items-center space-x-3 mb-6">
+                                <div className="bg-blue-100 p-2 rounded-xl">
+                                    <TrendingUp className="h-6 w-6 text-blue-600" />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900">Sales Trends</h3>
+                            </div>
+                            <LineChart
+                                data={salesTrends.chartData}
+                                height={300}
+                                options={{
+                                    scales: {
+                                        y: {
+                                            type: 'linear',
+                                            display: true,
+                                            position: 'left',
+                                            title: {
+                                                display: true,
+                                                text: 'Revenue (₹)'
+                                            }
+                                        },
+                                        y1: {
+                                            type: 'linear',
+                                            display: true,
+                                            position: 'right',
+                                            title: {
+                                                display: true,
+                                                text: 'Transactions'
+                                            },
+                                            grid: {
+                                                drawOnChartArea: false,
+                                            },
+                                        }
+                                    }
+                                }}
+                            />
+                        </div>
+                    )}
+
+                    {/* Category Sales Distribution */}
+                    {categorySalesData && categorySalesData.chartData && (
+                        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow duration-300">
+                            <div className="flex items-center space-x-3 mb-6">
+                                <div className="bg-purple-100 p-2 rounded-xl">
+                                    <PieChart className="h-6 w-6 text-purple-600" />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900">Sales by Category</h3>
+                            </div>
+                            <DoughnutChart
+                                data={categorySalesData.chartData}
+                                height={300}
+                            />
+                        </div>
+                    )}
+                </div>
+
+                {/* Second Charts Row */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {/* Top Products Chart */}
+                    {topProductsChartData && topProductsChartData.chartData && (
+                        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow duration-300">
+                            <div className="flex items-center space-x-3 mb-6">
+                                <div className="bg-green-100 p-2 rounded-xl">
+                                    <BarChart3 className="h-6 w-6 text-green-600" />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900">Top Revenue Products</h3>
+                            </div>
+                            <BarChart
+                                data={topProductsChartData.chartData}
+                                height={300}
+                                options={{
+                                    indexAxis: 'y',
+                                    scales: {
+                                        x: {
+                                            title: {
+                                                display: true,
+                                                text: 'Revenue (₹)'
+                                            }
+                                        }
+                                    }
+                                }}
+                            />
+                        </div>
+                    )}
+
+                    {/* Customer Segmentation */}
+                    {customerSegmentationData && customerSegmentationData.chartData && (
+                        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow duration-300">
+                            <div className="flex items-center space-x-3 mb-6">
+                                <div className="bg-indigo-100 p-2 rounded-xl">
+                                    <Users className="h-6 w-6 text-indigo-600" />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900">Customer Segmentation</h3>
+                            </div>
+                            <DoughnutChart
+                                data={customerSegmentationData.chartData}
+                                height={300}
+                            />
+                        </div>
+                    )}
+                </div>
+
+                {/* Product Lists Row */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Most Selling Products */}
                     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow duration-300">
                         <div className="flex justify-between items-center mb-6">
@@ -377,47 +492,6 @@ export const AnalyticsPage = () => {
                                 </p>
                                 <p className="text-sm text-gray-600 mt-1">One-time</p>
                             </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Sales Trends */}
-                {salesTrends.length > 0 && (
-                    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-                        <div className="flex items-center space-x-3 mb-6">
-                            <div className="bg-indigo-100 p-2 rounded-xl">
-                                <BarChart3 className="h-6 w-6 text-indigo-600" />
-                            </div>
-                            <h3 className="text-xl font-bold text-gray-900">Recent Sales Trends</h3>
-                        </div>
-                        <div className="space-y-3">
-                            {salesTrends.slice(-7).map((trend, index) => (
-                                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-                                    <div>
-                                        <p className="font-semibold text-gray-900">
-                                            {formatDate(trend.period)}
-                                        </p>
-                                    </div>
-                                    <div className="flex items-center space-x-6">
-                                        <div className="text-center">
-                                            <p className="text-sm text-gray-600">Transactions</p>
-                                            <p className="font-bold text-gray-900">{trend.transactionCount}</p>
-                                        </div>
-                                        <div className="text-center">
-                                            <p className="text-sm text-gray-600">Revenue</p>
-                                            <p className="font-bold text-green-600">
-                                                {formatCurrency(trend.totalRevenue)}
-                                            </p>
-                                        </div>
-                                        <div className="text-center">
-                                            <p className="text-sm text-gray-600">Avg Order</p>
-                                            <p className="font-bold text-blue-600">
-                                                {formatCurrency(trend.avgOrderValue)}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
                         </div>
                     </div>
                 )}

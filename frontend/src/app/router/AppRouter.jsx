@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { LoginPage, RegisterPage, ProtectedRoute } from '../../features/auth';
 import { LandingPage } from '../../features/landing';
 import { DashboardPage } from '../../features/dashboard';
@@ -9,16 +9,41 @@ import { FeedbackPage } from '../../features/feedback';
 import { AnalyticsPage, MostSellingProductsPage, HighestRevenueProductsPage } from '../../features/analytics';
 import CustomerFeedbackPage from '../../features/feedback/pages/CustomerFeedbackPage';
 import ScrollToTop from '../../shared/components/ScrollToTop';
+import { useAuth } from '../../features/auth/hooks/useAuth';
 
 export const AppRouter = () => {
+    const { user, loading } = useAuth();
+
+    // Show loading while checking authentication
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="relative">
+                    <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200"></div>
+                    <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-600 border-t-transparent absolute top-0"></div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <>
             <ScrollToTop />
             <Routes>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
+                {/* Public routes */}
                 <Route path="/customer-feedback" element={<CustomerFeedbackPage />} />
+
+                {/* Auth routes - redirect to dashboard if already authenticated */}
+                <Route
+                    path="/login"
+                    element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />}
+                />
+                <Route
+                    path="/register"
+                    element={user ? <Navigate to="/dashboard" replace /> : <RegisterPage />}
+                />
+
+                {/* Protected routes */}
                 <Route
                     path="/dashboard"
                     element={
@@ -99,9 +124,17 @@ export const AppRouter = () => {
                         </ProtectedRoute>
                     }
                 />
+
+                {/* Root route - redirect based on authentication */}
                 <Route
-                    path="/*"
-                    element={<LandingPage />}
+                    path="/"
+                    element={user ? <Navigate to="/dashboard" replace /> : <LandingPage />}
+                />
+
+                {/* Catch all route - redirect based on authentication */}
+                <Route
+                    path="*"
+                    element={user ? <Navigate to="/dashboard" replace /> : <Navigate to="/" replace />}
                 />
             </Routes>
         </>

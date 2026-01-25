@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Eye, EyeOff, UserPlus } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import Button from '../../../shared/components/ui/Button';
@@ -14,6 +14,10 @@ const RegisterForm = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const { register: registerUser, loading } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // Get the intended destination from location state, default to dashboard
+    const from = location.state?.from?.pathname || '/dashboard';
 
     const {
         register,
@@ -28,7 +32,8 @@ const RegisterForm = () => {
         const { confirmPassword, ...userData } = data;
         const result = await registerUser(userData);
         if (result.success) {
-            navigate('/dashboard');
+            // Navigate to the intended destination or dashboard
+            navigate(from, { replace: true });
         }
     };
 

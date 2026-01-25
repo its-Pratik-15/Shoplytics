@@ -137,11 +137,69 @@ const getDashboardOverview = async (req, res, next) => {
   }
 };
 
+const getCategorySalesData = async (req, res, next) => {
+  try {
+    const filters = validateDateFilters(req.query);
+    
+    const categoryData = await analyticsService.getCategorySalesData(filters);
+    
+    res.json({
+      success: true,
+      data: categoryData,
+      message: 'Category sales data retrieved successfully'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getCustomerSegmentationData = async (req, res, next) => {
+  try {
+    const filters = validateDateFilters(req.query);
+    
+    const segmentationData = await analyticsService.getCustomerSegmentationData(filters);
+    
+    res.json({
+      success: true,
+      data: segmentationData,
+      message: 'Customer segmentation data retrieved successfully'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getTopProductsChartData = async (req, res, next) => {
+  try {
+    const filters = validateDateFilters(req.query);
+    const { type } = req.query;
+    
+    if (type && !['revenue', 'quantity'].includes(type)) {
+      throw createError('VALIDATION_ERROR', 'Type must be either "revenue" or "quantity"', 400);
+    }
+    
+    if (type) filters.type = type;
+    
+    const chartData = await analyticsService.getTopProductsChartData(filters);
+    
+    res.json({
+      success: true,
+      data: chartData,
+      message: 'Top products chart data retrieved successfully'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getMostSellingProducts,
   getHighestRevenueProducts,
   getCustomerAnalytics,
   getSalesTrends,
   getFeedbackSpendingInsights,
-  getDashboardOverview
+  getDashboardOverview,
+  getCategorySalesData,
+  getCustomerSegmentationData,
+  getTopProductsChartData
 };

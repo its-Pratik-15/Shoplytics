@@ -5,6 +5,50 @@ const {
   validateFeedbackFilters 
 } = require('../validations/feedbackValidation');
 
+const createPublicFeedback = async (req, res, next) => {
+  try {
+    const { customerName, email, phone, rating, comment } = req.body;
+    
+    // Basic validation
+    if (!customerName || !customerName.trim()) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'Customer name is required'
+        }
+      });
+    }
+    
+    if (!rating || rating < 1 || rating > 5) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'Rating must be between 1 and 5'
+        }
+      });
+    }
+    
+    // Create or find customer
+    const feedback = await feedbackService.createPublicFeedback({
+      customerName: customerName.trim(),
+      email: email?.trim() || null,
+      phone: phone?.trim() || null,
+      rating: parseInt(rating),
+      comment: comment?.trim() || null
+    });
+    
+    res.status(201).json({
+      success: true,
+      data: feedback,
+      message: 'Thank you for your feedback!'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const createFeedback = async (req, res, next) => {
   try {
     // Validate input
@@ -129,6 +173,7 @@ const getFeedbackByCustomer = async (req, res, next) => {
 };
 
 module.exports = {
+  createPublicFeedback,
   createFeedback,
   getAllFeedback,
   getFeedbackById,

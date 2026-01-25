@@ -51,7 +51,8 @@ const getMostSellingProducts = async (filters = {}) => {
             id: true,
             name: true,
             category: true,
-            price: true,
+            sellingPrice: true,
+            costPrice: true,
             imageUrls: true
           }
         });
@@ -115,7 +116,8 @@ const getHighestRevenueProducts = async (filters = {}) => {
             id: true,
             name: true,
             category: true,
-            price: true,
+            sellingPrice: true,
+            costPrice: true,
             imageUrls: true
           }
         });
@@ -149,30 +151,28 @@ const getCustomerAnalytics = async (filters = {}) => {
 
     const [
       totalCustomers,
-      newCustomers,
-      oldCustomers,
       customersWithPurchases,
-      topCustomers,
-      repeatCustomers
+      topCustomers
     ] = await Promise.all([
       // Total customers
       prisma.customer.count(),
       
-      // New customers (isNewCustomer = true)
-      prisma.customer.count({
-        where: { isNewCustomer: true }
-      }),
-      
-      // Old customers (isNewCustomer = false)
-      prisma.customer.count({
-        where: { isNewCustomer: false }
-      }),
-      
-      // Customers who made purchases in the period
-      prisma.customer.count({
+      // Customers who made purchases in the period with transaction counts
+      prisma.customer.findMany({
         where: {
           transactions: {
             some: transactionWhere
+          }
+        },
+        select: {
+          id: true,
+          isNewCustomer: true,
+          _count: {
+            select: {
+              transactions: {
+                where: transactionWhere
+              }
+            }
           }
         }
       }),
@@ -200,36 +200,57 @@ const getCustomerAnalytics = async (filters = {}) => {
             }
           }
         }
-      }),
-      
-      // Repeat customers (customers with more than 1 transaction)
-      prisma.customer.count({
-        where: {
-          transactions: {
-            some: transactionWhere
-          }
-        }
       })
     ]);
 
-    // Calculate one-time customers (simplified approach)
-    const oneTimeCustomers = Math.max(0, customersWithPurchases - repeatCustomers);
+    // Calculate customer segments based on transaction behavior
+    let newCustomers = 0;
+    let returningCustomers = 0;
+    let oneTimeCustomers = 0;
+    let repeatCustomers = 0;
+
+    // Also count customers by isNewCustomer field for backward compatibility
+    let newCustomersByFlag = 0;
+    let oldCustomersByFlag = 0;
+
+    customersWithPurchases.forEach(customer => {
+      const transactionCount = customer._count.transactions;
+      
+      // Count by transaction behavior
+      if (transactionCount === 1) {
+        newCustomers++;
+        oneTimeCustomers++;
+      } else if (transactionCount > 1) {
+        returningCustomers++;
+        repeatCustomers++;
+      }
+
+      // Count by isNewCustomer flag for backward compatibility
+      if (customer.isNewCustomer) {
+        newCustomersByFlag++;
+      } else {
+        oldCustomersByFlag++;
+      }
+    });
 
     return {
       totalCustomers,
-      newCustomers,
-      oldCustomers,
-      customersWithPurchases,
+      newCustomers: newCustomersByFlag, // Keep using flag for consistency with existing UI
+      oldCustomers: oldCustomersByFlag, // Keep using flag for consistency with existing UI
+      customersWithPurchases: customersWithPurchases.length,
       topCustomers,
       repeatCustomers,
-      oneTimeCustomers
+      oneTimeCustomers,
+      // Add new metrics based on transaction behavior
+      newCustomersByBehavior: newCustomers,
+      returningCustomersByBehavior: returningCustomers
     };
   } catch (error) {
     throw error;
   }
 };
 
-// Sales trends (daily/monthly)
+// Sales trends (daily/monthly) with chart-ready format
 const getSalesTrends = async (filters = {}) => {
   try {
     const { period = 'daily', startDate, endDate } = filters;
@@ -278,12 +299,47 @@ const getSalesTrends = async (filters = {}) => {
     });
 
     // Calculate averages and return sorted data
-    return Object.values(groupedData).map(item => ({
+    const trendsData = Object.values(groupedData).map(item => ({
       period: item.period,
       transactionCount: item.transactionCount,
       totalRevenue: Number(item.totalRevenue.toFixed(2)),
       avgOrderValue: item.transactionCount > 0 ? Number((item.totalAmount / item.transactionCount).toFixed(2)) : 0
     })).sort((a, b) => a.period.localeCompare(b.period));
+
+    // Format for Chart.js
+    const chartData = {
+      labels: trendsData.map(item => {
+        const date = new Date(item.period);
+        return period === 'monthly' 
+          ? date.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })
+          : date.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
+      }),
+      datasets: [
+        {
+          label: 'Revenue (₹)',
+          data: trendsData.map(item => item.totalRevenue),
+          borderColor: 'rgb(59, 130, 246)',
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          fill: true,
+          tension: 0.4,
+          yAxisID: 'y'
+        },
+        {
+          label: 'Transactions',
+          data: trendsData.map(item => item.transactionCount),
+          borderColor: 'rgb(16, 185, 129)',
+          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          fill: false,
+          tension: 0.4,
+          yAxisID: 'y1'
+        }
+      ]
+    };
+
+    return {
+      data: trendsData,
+      chartData
+    };
   } catch (error) {
     throw error;
   }
@@ -500,11 +556,225 @@ const getDashboardOverview = async (filters = {}) => {
   }
 };
 
+// Get category-wise sales data for charts
+const getCategorySalesData = async (filters = {}) => {
+  try {
+    const { startDate, endDate } = filters;
+    
+    const where = {};
+    if (startDate || endDate) {
+      where.transaction = {
+        createdAt: {}
+      };
+      if (startDate) where.transaction.createdAt.gte = startDate;
+      if (endDate) where.transaction.createdAt.lte = endDate;
+      where.transaction.status = 'COMPLETED';
+    } else {
+      where.transaction = { status: 'COMPLETED' };
+    }
+
+    const categoryData = await prisma.transactionItem.groupBy({
+      by: ['productId'],
+      where,
+      _sum: {
+        subtotal: true,
+        quantity: true
+      }
+    });
+
+    // Get product categories
+    const productCategories = {};
+    for (const item of categoryData) {
+      const product = await prisma.product.findUnique({
+        where: { id: item.productId },
+        select: { category: true }
+      });
+      
+      if (product) {
+        if (!productCategories[product.category]) {
+          productCategories[product.category] = {
+            revenue: 0,
+            quantity: 0
+          };
+        }
+        productCategories[product.category].revenue += toNumber(item._sum.subtotal);
+        productCategories[product.category].quantity += item._sum.quantity;
+      }
+    }
+
+    const categories = Object.keys(productCategories);
+    const revenues = Object.values(productCategories).map(cat => cat.revenue);
+    const quantities = Object.values(productCategories).map(cat => cat.quantity);
+
+    // Chart data for doughnut chart
+    const chartData = {
+      labels: categories,
+      datasets: [
+        {
+          label: 'Revenue by Category',
+          data: revenues,
+          backgroundColor: [
+            'rgba(59, 130, 246, 0.8)',
+            'rgba(16, 185, 129, 0.8)',
+            'rgba(245, 158, 11, 0.8)',
+            'rgba(239, 68, 68, 0.8)',
+            'rgba(139, 92, 246, 0.8)',
+            'rgba(236, 72, 153, 0.8)',
+            'rgba(6, 182, 212, 0.8)',
+            'rgba(34, 197, 94, 0.8)'
+          ],
+          borderColor: [
+            'rgba(59, 130, 246, 1)',
+            'rgba(16, 185, 129, 1)',
+            'rgba(245, 158, 11, 1)',
+            'rgba(239, 68, 68, 1)',
+            'rgba(139, 92, 246, 1)',
+            'rgba(236, 72, 153, 1)',
+            'rgba(6, 182, 212, 1)',
+            'rgba(34, 197, 94, 1)'
+          ],
+          borderWidth: 2
+        }
+      ]
+    };
+
+    return {
+      data: Object.entries(productCategories).map(([category, data]) => ({
+        category,
+        revenue: data.revenue,
+        quantity: data.quantity
+      })),
+      chartData
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Get customer segmentation data for charts
+const getCustomerSegmentationData = async (filters = {}) => {
+  try {
+    const { startDate, endDate } = filters;
+    
+    const transactionWhere = { status: 'COMPLETED' };
+    if (startDate || endDate) {
+      transactionWhere.createdAt = {};
+      if (startDate) transactionWhere.createdAt.gte = startDate;
+      if (endDate) transactionWhere.createdAt.lte = endDate;
+    }
+
+    // Get customers with their transaction counts
+    const customersWithTransactionCounts = await prisma.customer.findMany({
+      where: {
+        transactions: {
+          some: transactionWhere
+        }
+      },
+      select: {
+        id: true,
+        _count: {
+          select: {
+            transactions: {
+              where: transactionWhere
+            }
+          }
+        }
+      }
+    });
+
+    // Categorize customers based on transaction count
+    let newCustomers = 0;
+    let returningCustomers = 0;
+
+    customersWithTransactionCounts.forEach(customer => {
+      if (customer._count.transactions === 1) {
+        newCustomers++;
+      } else if (customer._count.transactions > 1) {
+        returningCustomers++;
+      }
+    });
+
+    const chartData = {
+      labels: ['New Customers', 'Returning Customers'],
+      datasets: [
+        {
+          label: 'Customer Segmentation',
+          data: [newCustomers, returningCustomers],
+          backgroundColor: [
+            'rgba(34, 197, 94, 0.8)',
+            'rgba(59, 130, 246, 0.8)'
+          ],
+          borderColor: [
+            'rgba(34, 197, 94, 1)',
+            'rgba(59, 130, 246, 1)'
+          ],
+          borderWidth: 2
+        }
+      ]
+    };
+
+    return {
+      data: {
+        newCustomers,
+        oldCustomers: returningCustomers, // Keep the same key for backward compatibility
+        total: newCustomers + returningCustomers
+      },
+      chartData
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Get top products data for bar chart
+const getTopProductsChartData = async (filters = {}) => {
+  try {
+    const { startDate, endDate, limit = 10, type = 'revenue' } = filters;
+    
+    let products;
+    if (type === 'quantity') {
+      products = await getMostSellingProducts({ startDate, endDate, limit });
+    } else {
+      products = await getHighestRevenueProducts({ startDate, endDate, limit });
+    }
+
+    const labels = products.map(item => item.product.name);
+    const data = products.map(item => 
+      type === 'quantity' ? item.totalQuantitySold : item.totalRevenue
+    );
+
+    const chartData = {
+      labels,
+      datasets: [
+        {
+          label: type === 'quantity' ? 'Quantity Sold' : 'Revenue (₹)',
+          data,
+          backgroundColor: 'rgba(59, 130, 246, 0.8)',
+          borderColor: 'rgba(59, 130, 246, 1)',
+          borderWidth: 2,
+          borderRadius: 6,
+          borderSkipped: false
+        }
+      ]
+    };
+
+    return {
+      data: products,
+      chartData
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   getMostSellingProducts,
   getHighestRevenueProducts,
   getCustomerAnalytics,
   getSalesTrends,
   getFeedbackSpendingInsights,
-  getDashboardOverview
+  getDashboardOverview,
+  getCategorySalesData,
+  getCustomerSegmentationData,
+  getTopProductsChartData
 };

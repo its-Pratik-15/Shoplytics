@@ -1,27 +1,141 @@
 import { useState, useEffect } from 'react';
 import Layout from '../../../shared/components/layout/Layout';
+import { LineChart, BarChart, DoughnutChart } from '../../../shared/components/charts';
+import { analyticsAPI } from '../../analytics/services/analytics.api';
+import { formatCurrency } from '../../../shared/utils';
+import { useAuth } from '../../auth/hooks/useAuth';
+import toast from 'react-hot-toast';
 import { TrendingUp, Package, Users, ShoppingCart, Star, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 
 const DashboardPage = () => {
-    const [stats, setStats] = useState({
-        totalSales: 125430,
-        products: 156,
-        customers: 89,
-        orders: 234,
-        growth: {
-            sales: 12.5,
-            products: 8.2,
-            customers: 15.3,
-            orders: 6.7
-        }
-    });
+    const [stats, setStats] = useState(null);
+    const [recentActivity, setRecentActivity] = useState([]);
+    const [salesTrendsData, setSalesTrendsData] = useState(null);
+    const [categorySalesData, setCategorySalesData] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    const [recentActivity] = useState([
-        { id: 1, type: 'sale', customer: 'Rajesh Kumar', amount: 2450, time: '2 minutes ago' },
-        { id: 2, type: 'product', name: 'Tata Tea Premium', action: 'added', time: '15 minutes ago' },
-        { id: 3, type: 'customer', customer: 'Priya Sharma', action: 'registered', time: '1 hour ago' },
-        { id: 4, type: 'sale', customer: 'Amit Patel', amount: 1200, time: '2 hours ago' },
-    ]);
+    const { hasRole } = useAuth();
+    const canViewDashboard = hasRole(['OWNER', 'ADMIN', 'MANAGER', 'CASHIER']);
+
+    useEffect(() => {
+        if (canViewDashboard) {
+            fetchDashboardData();
+        }
+    }, [canViewDashboard]);
+
+    const fetchDashboardData = async () => {
+        try {
+            setLoading(true);
+
+            // Get data for last 7 days
+            const endDate = new Date();
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - 7);
+
+            const params = {
+                startDate: startDate.toISOString(),
+                endDate: endDate.toISOString()
+            };
+
+            const [
+                overviewRes,
+                salesTrendsRes,
+                categorySalesRes
+            ] = await Promise.all([
+                analyticsAPI.getDashboardOverview(params),
+                analyticsAPI.getSalesTrends({ ...params, period: 'daily' }),
+                analyticsAPI.getCategorySalesData(params)
+            ]);
+
+            if (overviewRes.success) {
+                const overview = overviewRes.data;
+                setStats({
+                    totalSales: overview.totalRevenue,
+                    products: overview.totalProducts || 0,
+                    customers: overview.totalCustomers,
+                    orders: overview.totalTransactions,
+                    growth: {
+                        sales: 12.5, // You can calculate this from historical data
+                        products: 8.2,
+                        customers: 15.3,
+                        orders: 6.7
+                    }
+                });
+
+                // Convert recent transactions to activity format
+                if (overview.recentTransactions) {
+                    const activities = overview.recentTransactions.map((transaction, index) => ({
+                        id: transaction.id,
+                        type: 'sale',
+                        customer: transaction.customer.name,
+                        amount: transaction.total,
+                        time: getTimeAgo(transaction.createdAt)
+                    }));
+                    setRecentActivity(activities);
+                }
+            }
+
+            if (salesTrendsRes.success) {
+                setSalesTrendsData(salesTrendsRes.data);
+            }
+
+            if (categorySalesRes.success) {
+                setCategorySalesData(categorySalesRes.data);
+            }
+
+        } catch (error) {
+            toast.error('Failed to fetch dashboard data');
+            console.error('Dashboard fetch error:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const getTimeAgo = (dateString) => {
+        const now = new Date();
+        const date = new Date(dateString);
+        const diffInMinutes = Math.floor((now - date) / (1000 * 60));
+
+        if (diffInMinutes < 1) return 'Just now';
+        if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`;
+
+        const diffInHours = Math.floor(diffInMinutes / 60);
+        if (diffInHours < 24) return `${diffInHours} hours ago`;
+
+        const diffInDays = Math.floor(diffInHours / 24);
+        return `${diffInDays} days ago`;
+    };
+
+    if (loading) {
+        return (
+            <Layout>
+                <div className="flex justify-center items-center py-20">
+                    <div className="relative">
+                        <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200"></div>
+                        <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-600 border-t-transparent absolute top-0"></div>
+                    </div>
+                </div>
+            </Layout>
+        );
+    }
+
+    if (!canViewDashboard) {
+        return (
+            <Layout>
+                <div className="flex items-center justify-center h-64">
+                    <div className="text-center">
+                        <div className="bg-red-100 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
+                            <TrendingUp className="h-12 w-12 text-red-400" />
+                        </div>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2">Access Restricted</h3>
+                        <p className="text-gray-500 text-lg">
+                            You do not have permission to view the dashboard.
+                        </p>
+                    </div>
+                </div>
+            </Layout>
+        );
+    }
 
     const StatCard = ({ title, value, icon: Icon, color, growth, prefix = '' }) => (
         <div className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
@@ -132,35 +246,39 @@ const DashboardPage = () => {
 
                 {/* Stats Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <StatCard
-                        title="Total Sales"
-                        value={stats.totalSales}
-                        icon={TrendingUp}
-                        color="from-green-500 to-emerald-600"
-                        growth={stats.growth.sales}
-                        prefix="₹"
-                    />
-                    <StatCard
-                        title="Products"
-                        value={stats.products}
-                        icon={Package}
-                        color="from-blue-500 to-blue-600"
-                        growth={stats.growth.products}
-                    />
-                    <StatCard
-                        title="Customers"
-                        value={stats.customers}
-                        icon={Users}
-                        color="from-purple-500 to-purple-600"
-                        growth={stats.growth.customers}
-                    />
-                    <StatCard
-                        title="Orders"
-                        value={stats.orders}
-                        icon={ShoppingCart}
-                        color="from-orange-500 to-red-500"
-                        growth={stats.growth.orders}
-                    />
+                    {stats && (
+                        <>
+                            <StatCard
+                                title="Total Sales"
+                                value={stats.totalSales}
+                                icon={TrendingUp}
+                                color="from-green-500 to-emerald-600"
+                                growth={stats.growth.sales}
+                                prefix="₹"
+                            />
+                            <StatCard
+                                title="Products"
+                                value={stats.products}
+                                icon={Package}
+                                color="from-blue-500 to-blue-600"
+                                growth={stats.growth.products}
+                            />
+                            <StatCard
+                                title="Customers"
+                                value={stats.customers}
+                                icon={Users}
+                                color="from-purple-500 to-purple-600"
+                                growth={stats.growth.customers}
+                            />
+                            <StatCard
+                                title="Orders"
+                                value={stats.orders}
+                                icon={ShoppingCart}
+                                color="from-orange-500 to-red-500"
+                                growth={stats.growth.orders}
+                            />
+                        </>
+                    )}
                 </div>
 
                 {/* Recent Activity and Quick Actions */}
