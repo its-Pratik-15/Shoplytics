@@ -1,0 +1,46 @@
+/* Print styles for receipts */
+@media print {
+    @page {
+        size: 80mm auto;
+        margin: 0;
+    }
+
+    body {
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        line-height: 1.2;
+        margin: 0;
+        padding: 0;
+    }
+
+    .receipt-container {
+        width: 80mm;
+        margin: 0;
+        padding: 5mm;
+        background: white;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .print-only {
+        display: block !important;
+    }
+
+    /* Hide all other elements when printing */
+    body * {
+        visibility: hidden;
+    }
+
+    .receipt-container,
+    .receipt-container * {
+        visibility: visible;
+    }
+
+    .receipt-container {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+}
