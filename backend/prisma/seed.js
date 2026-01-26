@@ -154,7 +154,7 @@ async function main() {
     });
   }
 
-  // Create sample Indian customers
+  // Create sample Indian customers with visit counts
   const customers = [
     {
       name: 'Amit Patel',
@@ -183,6 +183,34 @@ async function main() {
       phone: '+91-6543210987',
       address: '23, Marine Drive, Mumbai, Maharashtra 400002',
       isNewCustomer: true // New customer
+    },
+    {
+      name: 'Ravi Kumar',
+      email: 'ravi.kumar@gmail.com',
+      phone: '+91-9988776655',
+      address: '67, Anna Salai, Chennai, Tamil Nadu 600002',
+      isNewCustomer: false // Old customer
+    },
+    {
+      name: 'Anjali Gupta',
+      email: 'anjali.gupta@outlook.com',
+      phone: '+91-8877665544',
+      address: '89, Civil Lines, Jaipur, Rajasthan 302006',
+      isNewCustomer: true // New customer
+    },
+    {
+      name: 'Deepak Sharma',
+      email: 'deepak.sharma@gmail.com',
+      phone: '+91-7766554433',
+      address: '45, Sector 15, Gurgaon, Haryana 122001',
+      isNewCustomer: false // Old customer
+    },
+    {
+      name: 'Kavya Reddy',
+      email: 'kavya.reddy@yahoo.com',
+      phone: '+91-6655443322',
+      address: '12, Banjara Hills, Hyderabad, Telangana 500034',
+      isNewCustomer: true // New customer
     }
   ];
 
@@ -199,34 +227,37 @@ async function main() {
   const createdCustomers = await prisma.customer.findMany();
 
   if (createdProducts.length > 0 && createdCustomers.length > 0) {
-    // Sample transaction 1
-    const transaction1 = await prisma.transaction.create({
-      data: {
-        customerId: createdCustomers[0].id,
-        total: 399.00,
-        paymentMode: 'UPI',
-        status: 'COMPLETED',
-        items: {
-          create: [
-            {
-              productId: createdProducts[0].id, // Tata Tea
-              quantity: 1,
-              priceAtSale: 285.00,
-              subtotal: 285.00
-            },
-            {
-              productId: createdProducts[8].id, // Britannia Bread
-              quantity: 4,
-              priceAtSale: 28.00,
-              subtotal: 112.00
-            }
-          ]
-        }
-      }
-    });
+    // Diverse transactions for Amit Patel (5 visits - Loyal)
+    const amitTransactions = [
+      { products: [0, 4], quantities: [1, 2], total: 455.00, payment: 'UPI' }, // Tea + Biscuits
+      { products: [2, 8], quantities: [1, 3], total: 934.00, payment: 'CASH' }, // Rice + Bread
+      { products: [1, 7], quantities: [2, 1], total: 800.00, payment: 'UPI' }, // Butter + Honey
+      { products: [5, 9], quantities: [1, 2], total: 675.00, payment: 'CARD' }, // Detergent + Toothpaste
+      { products: [6, 11], quantities: [2, 3], total: 495.00, payment: 'UPI' } // Namkeen + Ready Mix
+    ];
 
-    // Sample transaction 2
-    const transaction2 = await prisma.transaction.create({
+    for (let i = 0; i < amitTransactions.length; i++) {
+      const txn = amitTransactions[i];
+      await prisma.transaction.create({
+        data: {
+          customerId: createdCustomers[0].id,
+          total: txn.total,
+          paymentMode: txn.payment,
+          status: 'COMPLETED',
+          items: {
+            create: txn.products.map((productIndex, idx) => ({
+              productId: createdProducts[productIndex].id,
+              quantity: txn.quantities[idx],
+              priceAtSale: createdProducts[productIndex].sellingPrice,
+              subtotal: createdProducts[productIndex].sellingPrice * txn.quantities[idx]
+            }))
+          }
+        }
+      });
+    }
+
+    // Single transaction for Sunita Devi (1 visit - Regular)
+    await prisma.transaction.create({
       data: {
         customerId: createdCustomers[1].id,
         total: 1235.00,
@@ -251,33 +282,200 @@ async function main() {
       }
     });
 
-    // Update customer spending
-    await prisma.customer.update({
-      where: { id: createdCustomers[0].id },
-      data: { totalSpending: 399.00 }
-    });
+    // Diverse transactions for Vikram Singh (8 visits - Very Loyal)
+    const vikramTransactions = [
+      { products: [7, 1], quantities: [1, 1], total: 560.00, payment: 'UPI' },
+      { products: [0, 3], quantities: [2, 10], total: 710.00, payment: 'CARD' },
+      { products: [10, 8], quantities: [1, 2], total: 476.00, payment: 'CASH' },
+      { products: [4, 9], quantities: [3, 1], total: 350.00, payment: 'UPI' },
+      { products: [6, 11], quantities: [1, 2], total: 290.00, payment: 'CARD' },
+      { products: [2], quantities: [1], total: 850.00, payment: 'CASH' },
+      { products: [5, 7], quantities: [1, 1], total: 805.00, payment: 'UPI' },
+      { products: [1, 4, 3], quantities: [1, 1, 5], total: 395.00, payment: 'CARD' }
+    ];
 
-    await prisma.customer.update({
-      where: { id: createdCustomers[1].id },
-      data: { totalSpending: 1235.00 }
-    });
+    for (let i = 0; i < vikramTransactions.length; i++) {
+      const txn = vikramTransactions[i];
+      await prisma.transaction.create({
+        data: {
+          customerId: createdCustomers[2].id,
+          total: txn.total,
+          paymentMode: txn.payment,
+          status: 'COMPLETED',
+          items: {
+            create: txn.products.map((productIndex, idx) => ({
+              productId: createdProducts[productIndex].id,
+              quantity: txn.quantities[idx],
+              priceAtSale: createdProducts[productIndex].sellingPrice,
+              subtotal: createdProducts[productIndex].sellingPrice * txn.quantities[idx]
+            }))
+          }
+        }
+      });
+    }
 
-    // Create sample feedback
-    await prisma.feedback.create({
+    // Two diverse transactions for Meera Nair (2 visits - Regular)
+    const meeraTransactions = [
+      { products: [10, 8, 3], quantities: [1, 1, 3], total: 490.00, payment: 'UPI' },
+      { products: [0, 4, 9], quantities: [1, 1, 1], total: 465.00, payment: 'CARD' }
+    ];
+
+    for (let i = 0; i < meeraTransactions.length; i++) {
+      const txn = meeraTransactions[i];
+      await prisma.transaction.create({
+        data: {
+          customerId: createdCustomers[3].id,
+          total: txn.total,
+          paymentMode: txn.payment,
+          status: 'COMPLETED',
+          items: {
+            create: txn.products.map((productIndex, idx) => ({
+              productId: createdProducts[productIndex].id,
+              quantity: txn.quantities[idx],
+              priceAtSale: createdProducts[productIndex].sellingPrice,
+              subtotal: createdProducts[productIndex].sellingPrice * txn.quantities[idx]
+            }))
+          }
+        }
+      });
+    }
+
+    // Diverse transactions for Ravi Kumar (5 visits - Loyal Customer, reduced from 12)
+    const raviTransactions = [
+      { products: [6, 11, 3], quantities: [3, 2, 8], total: 632.00, payment: 'UPI' },
+      { products: [2, 5], quantities: [1, 1], total: 1335.00, payment: 'CARD' },
+      { products: [0, 1, 4], quantities: [1, 1, 2], total: 695.00, payment: 'CASH' },
+      { products: [7, 9, 8], quantities: [1, 2, 2], total: 624.00, payment: 'BANK_TRANSFER' },
+      { products: [10, 0, 4], quantities: [1, 1, 1], total: 790.00, payment: 'UPI' }
+    ];
+
+    for (let i = 0; i < raviTransactions.length; i++) {
+      const txn = raviTransactions[i];
+      await prisma.transaction.create({
+        data: {
+          customerId: createdCustomers[4].id,
+          total: txn.total,
+          paymentMode: txn.payment,
+          status: 'COMPLETED',
+          items: {
+            create: txn.products.map((productIndex, idx) => ({
+              productId: createdProducts[productIndex].id,
+              quantity: txn.quantities[idx],
+              priceAtSale: createdProducts[productIndex].sellingPrice,
+              subtotal: createdProducts[productIndex].sellingPrice * txn.quantities[idx]
+            }))
+          }
+        }
+      });
+    }
+
+    // Three transactions for Deepak Sharma (3 visits - Exactly Loyal threshold)
+    const deepakTransactions = [
+      { products: [0, 4, 8], quantities: [2, 1, 3], total: 739.00, payment: 'UPI' },
+      { products: [2, 7], quantities: [1, 1], total: 1170.00, payment: 'CARD' },
+      { products: [5, 9, 11], quantities: [1, 1, 2], total: 750.00, payment: 'CASH' }
+    ];
+
+    for (let i = 0; i < deepakTransactions.length; i++) {
+      const txn = deepakTransactions[i];
+      await prisma.transaction.create({
+        data: {
+          customerId: createdCustomers[6].id, // Deepak Sharma
+          total: txn.total,
+          paymentMode: txn.payment,
+          status: 'COMPLETED',
+          items: {
+            create: txn.products.map((productIndex, idx) => ({
+              productId: createdProducts[productIndex].id,
+              quantity: txn.quantities[idx],
+              priceAtSale: createdProducts[productIndex].sellingPrice,
+              subtotal: createdProducts[productIndex].sellingPrice * txn.quantities[idx]
+            }))
+          }
+        }
+      });
+    }
+
+    // Single transaction for Kavya Reddy (1 visit - Regular)
+    await prisma.transaction.create({
       data: {
-        customerId: createdCustomers[0].id,
+        customerId: createdCustomers[7].id, // Kavya Reddy
+        total: 675.00,
+        paymentMode: 'UPI',
+        status: 'COMPLETED',
+        items: {
+          create: [
+            {
+              productId: createdProducts[1].id, // Amul Butter
+              quantity: 2,
+              priceAtSale: 240.00,
+              subtotal: 480.00
+            },
+            {
+              productId: createdProducts[9].id, // Colgate Toothpaste
+              quantity: 2,
+              priceAtSale: 95.00,
+              subtotal: 190.00
+            }
+          ]
+        }
+      }
+    });
+
+    // Create diverse feedback from customers
+    const feedbackData = [
+      {
+        customerId: createdCustomers[0].id, // Amit Patel (Loyal)
         rating: 5,
-        comment: 'Excellent service and fresh products! Very satisfied with the quality.'
-      }
-    });
-
-    await prisma.feedback.create({
-      data: {
-        customerId: createdCustomers[1].id,
+        comment: 'Excellent service and fresh products! Very satisfied with the quality. Been shopping here for months!'
+      },
+      {
+        customerId: createdCustomers[0].id, // Amit Patel (Another feedback)
         rating: 4,
-        comment: 'Good variety of products. Quick billing process.'
+        comment: 'Great variety of products. Sometimes a bit crowded but worth the wait.'
+      },
+      {
+        customerId: createdCustomers[2].id, // Vikram Singh (Very Loyal)
+        rating: 5,
+        comment: 'Outstanding store! Great variety and competitive prices. My go-to place for groceries.'
+      },
+      {
+        customerId: createdCustomers[2].id, // Vikram Singh (Another feedback)
+        rating: 5,
+        comment: 'Always fresh products and friendly staff. Highly recommend this place!'
+      },
+      {
+        customerId: createdCustomers[1].id, // Sunita Devi (Regular)
+        rating: 4,
+        comment: 'Good variety of products. Quick billing process. Will visit again.'
+      },
+      {
+        customerId: createdCustomers[3].id, // Meera Nair (Regular)
+        rating: 3,
+        comment: 'Decent store with good products. Could improve the checkout speed.'
+      },
+      {
+        customerId: createdCustomers[4].id, // Ravi Kumar (Super Loyal)
+        rating: 5,
+        comment: 'Best grocery store in the area! Excellent customer service and always fresh products. Highly recommended!'
+      },
+      {
+        customerId: createdCustomers[4].id, // Ravi Kumar (Another feedback)
+        rating: 5,
+        comment: 'Amazing experience every time I visit. Great prices and quality products.'
+      },
+      {
+        customerId: createdCustomers[4].id, // Ravi Kumar (Third feedback)
+        rating: 4,
+        comment: 'Love shopping here. Only suggestion is to add more organic options.'
       }
-    });
+    ];
+
+    for (const feedback of feedbackData) {
+      await prisma.feedback.create({
+        data: feedback
+      });
+    }
   }
 
   console.log('Database seeding completed with Indian products!');
@@ -285,7 +483,16 @@ async function main() {
   console.log(`Employee: ${employee.email} (Password: cashier123)`);
   console.log(`Products created: ${products.length}`);
   console.log(`Customers created: ${customers.length}`);
-  console.log('Sample transactions and feedback created');
+  console.log('Sample transactions created with visit counts:');
+  console.log('- Amit Patel: 5 visits (Loyal Customer)');
+  console.log('- Sunita Devi: 1 visit (Regular Customer)');
+  console.log('- Vikram Singh: 8 visits (Loyal Customer)');
+  console.log('- Meera Nair: 2 visits (Regular Customer)');
+  console.log('- Ravi Kumar: 5 visits (Loyal Customer)');
+  console.log('- Anjali Gupta: 0 visits (New Customer)');
+  console.log('- Deepak Sharma: 3 visits (Loyal Customer)');
+  console.log('- Kavya Reddy: 1 visit (Regular Customer)');
+  console.log('Loyalty system: 3+ visits = Loyal Customer');
   console.log('All prices are in Indian Rupees (₹)');
 }
 
