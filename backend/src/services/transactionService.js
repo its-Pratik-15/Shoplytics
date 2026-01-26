@@ -96,6 +96,9 @@ const createTransaction = async (transactionData, userId, employeeId) => {
           data: {
             totalSpending: {
               increment: totalAmount
+            },
+            visitCount: {
+              increment: 1
             }
           }
         });
@@ -343,6 +346,9 @@ const updateTransactionStatus = async (transactionId, statusData) => {
             data: {
               totalSpending: {
                 decrement: Number(existingTransaction.total)
+              },
+              visitCount: {
+                decrement: 1
               }
             }
           });
