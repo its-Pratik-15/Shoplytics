@@ -77,6 +77,7 @@ model Customer {
   phone         String?
   address       String?
   totalSpending Decimal  @default(0) @db.Decimal(10, 2)
+  visitCount    Int      @default(0) // Track number of visits/transactions
   isNewCustomer Boolean  @default(true) // Track if customer is new (within 30 days)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -89,6 +90,7 @@ model Customer {
   @@index([phone])
   @@index([name])
   @@index([isNewCustomer])
+  @@index([visitCount])
   @@index([createdAt])
   @@map("customers")
 }
