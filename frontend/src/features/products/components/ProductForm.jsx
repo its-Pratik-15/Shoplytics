@@ -107,20 +107,28 @@ export const ProductForm = ({ product, onSuccess, onCancel }) => {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Product Name
+                        </label>
                         <Input
-                            label="Product Name"
                             {...register('name', {
                                 required: 'Product name is required',
                                 minLength: { value: 2, message: 'Name must be at least 2 characters' }
                             })}
                             error={errors.name?.message}
                             placeholder="Enter product name"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
+                        {errors.name && (
+                            <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+                        )}
                     </div>
 
                     <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            SKU
+                        </label>
                         <Input
-                            label="SKU"
                             {...register('sku', {
                                 required: 'SKU is required',
                                 pattern: {
@@ -130,7 +138,11 @@ export const ProductForm = ({ product, onSuccess, onCancel }) => {
                             })}
                             error={errors.sku?.message}
                             placeholder="e.g., PROD001"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
+                        {errors.sku && (
+                            <p className="text-red-500 text-sm mt-1">{errors.sku.message}</p>
+                        )}
                     </div>
                 </div>
 
@@ -152,10 +164,12 @@ export const ProductForm = ({ product, onSuccess, onCancel }) => {
                     )}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Selling Price (₹)
+                        </label>
                         <Input
-                            label="Selling Price (₹)"
                             type="number"
                             step="0.01"
                             {...register('sellingPrice', {
@@ -164,12 +178,18 @@ export const ProductForm = ({ product, onSuccess, onCancel }) => {
                             })}
                             error={errors.sellingPrice?.message}
                             placeholder="0.00"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
+                        {errors.sellingPrice && (
+                            <p className="text-red-500 text-sm mt-1">{errors.sellingPrice.message}</p>
+                        )}
                     </div>
 
                     <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Cost Price (₹)
+                        </label>
                         <Input
-                            label="Cost Price (₹)"
                             type="number"
                             step="0.01"
                             {...register('costPrice', {
@@ -178,12 +198,18 @@ export const ProductForm = ({ product, onSuccess, onCancel }) => {
                             })}
                             error={errors.costPrice?.message}
                             placeholder="0.00"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
+                        {errors.costPrice && (
+                            <p className="text-red-500 text-sm mt-1">{errors.costPrice.message}</p>
+                        )}
                     </div>
 
                     <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Quantity
+                        </label>
                         <Input
-                            label="Quantity"
                             type="number"
                             {...register('quantity', {
                                 required: 'Quantity is required',
@@ -191,18 +217,28 @@ export const ProductForm = ({ product, onSuccess, onCancel }) => {
                             })}
                             error={errors.quantity?.message}
                             placeholder="0"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
+                        {errors.quantity && (
+                            <p className="text-red-500 text-sm mt-1">{errors.quantity.message}</p>
+                        )}
                     </div>
 
                     <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Category
+                        </label>
                         <Input
-                            label="Category"
                             {...register('category', {
                                 required: 'Category is required'
                             })}
                             error={errors.category?.message}
                             placeholder="e.g., Beverages"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
+                        {errors.category && (
+                            <p className="text-red-500 text-sm mt-1">{errors.category.message}</p>
+                        )}
                     </div>
                 </div>
 

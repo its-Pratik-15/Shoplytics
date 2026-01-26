@@ -33,7 +33,7 @@ const LandingPage = () => {
     const features = [
         {
             icon: ShoppingCart,
-            title: 'Smart Point of Sale',
+            title: 'Smart Checkout Counter',
             description: 'Lightning-fast checkout with intelligent inventory tracking and automated stock alerts.',
             color: 'from-blue-500 to-cyan-500',
             stats: '99.9% Uptime'
@@ -86,7 +86,7 @@ const LandingPage = () => {
         {
             name: 'Priya Sharma',
             role: 'Retail Chain Manager, Delhi',
-            content: 'The best POS system we\'ve used. Customer management features are outstanding and support is excellent.',
+            content: 'The best checkout counter system we\'ve used. Customer management features are outstanding and support is excellent.',
             rating: 5,
             avatar: 'PS'
         },
@@ -185,7 +185,7 @@ const LandingPage = () => {
                         {/* Badge */}
                         <div className="inline-flex items-center px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-blue-200 mb-8">
                             <Sparkles className="h-4 w-4 text-blue-600 mr-2" />
-                            <span className="text-sm font-semibold text-blue-600">India's #1 Smart POS Solution</span>
+                            <span className="text-sm font-semibold text-blue-600">India's #1 Smart Checkout Counter Solution</span>
                         </div>
 
                         <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
@@ -196,7 +196,7 @@ const LandingPage = () => {
                         </h1>
 
                         <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed">
-                            The most advanced Point of Sale system with AI-powered analytics.
+                            The most advanced Checkout Counter system with AI-powered analytics.
                             <span className="font-semibold text-gray-800"> Increase sales by 40%</span> and streamline operations with real-time insights.
                         </p>
 
