@@ -651,8 +651,8 @@ const getCategorySalesData = async (filters = {}) => {
   }
 };
 
-// Get customer segmentation data for charts
-const getCustomerSegmentationData = async (filters = {}) => {
+// Get customer loyalty statistics for dashboard
+const getCustomerLoyaltyStats = async (filters = {}) => {
   try {
     const { startDate, endDate } = filters;
     
@@ -663,63 +663,60 @@ const getCustomerSegmentationData = async (filters = {}) => {
       if (endDate) transactionWhere.createdAt.lte = endDate;
     }
 
-    // Get customers with their transaction counts
-    const customersWithTransactionCounts = await prisma.customer.findMany({
-      where: {
-        transactions: {
-          some: transactionWhere
-        }
-      },
+    // Get all customers with their visit counts
+    const customers = await prisma.customer.findMany({
       select: {
         id: true,
-        _count: {
-          select: {
-            transactions: {
-              where: transactionWhere
-            }
-          }
-        }
+        name: true,
+        visitCount: true,
+        totalSpending: true,
+        isNewCustomer: true
       }
     });
 
-    // Categorize customers based on transaction count
+    // Categorize customers by loyalty
     let newCustomers = 0;
-    let returningCustomers = 0;
+    let regularCustomers = 0;
+    let loyalCustomers = 0;
+    let totalSpendingByLoyalty = {
+      new: 0,
+      regular: 0,
+      loyal: 0
+    };
 
-    customersWithTransactionCounts.forEach(customer => {
-      if (customer._count.transactions === 1) {
+    customers.forEach(customer => {
+      const visitCount = customer.visitCount || 0;
+      const spending = toNumber(customer.totalSpending);
+
+      if (visitCount === 0) {
         newCustomers++;
-      } else if (customer._count.transactions > 1) {
-        returningCustomers++;
+        totalSpendingByLoyalty.new += spending;
+      } else if (visitCount < 3) {
+        regularCustomers++;
+        totalSpendingByLoyalty.regular += spending;
+      } else {
+        loyalCustomers++;
+        totalSpendingByLoyalty.loyal += spending;
       }
     });
 
-    const chartData = {
-      labels: ['New Customers', 'Returning Customers'],
-      datasets: [
-        {
-          label: 'Customer Segmentation',
-          data: [newCustomers, returningCustomers],
-          backgroundColor: [
-            'rgba(34, 197, 94, 0.8)',
-            'rgba(59, 130, 246, 0.8)'
-          ],
-          borderColor: [
-            'rgba(34, 197, 94, 1)',
-            'rgba(59, 130, 246, 1)'
-          ],
-          borderWidth: 2
-        }
-      ]
+    const avgSpendingByLoyalty = {
+      new: newCustomers > 0 ? totalSpendingByLoyalty.new / newCustomers : 0,
+      regular: regularCustomers > 0 ? totalSpendingByLoyalty.regular / regularCustomers : 0,
+      loyal: loyalCustomers > 0 ? totalSpendingByLoyalty.loyal / loyalCustomers : 0
     };
 
     return {
-      data: {
-        newCustomers,
-        oldCustomers: returningCustomers, // Keep the same key for backward compatibility
-        total: newCustomers + returningCustomers
-      },
-      chartData
+      totalCustomers: customers.length,
+      newCustomers,
+      regularCustomers,
+      loyalCustomers,
+      avgSpendingByLoyalty,
+      loyaltyDistribution: {
+        labels: ['New Customers', 'Regular Customers', 'Loyal Customers'],
+        data: [newCustomers, regularCustomers, loyalCustomers],
+        backgroundColor: ['#10B981', '#3B82F6', '#8B5CF6']
+      }
     };
   } catch (error) {
     throw error;
@@ -775,6 +772,6 @@ module.exports = {
   getFeedbackSpendingInsights,
   getDashboardOverview,
   getCategorySalesData,
-  getCustomerSegmentationData,
+  getCustomerLoyaltyStats,
   getTopProductsChartData
 };
