@@ -62,7 +62,7 @@ export const AnalyticsPage = () => {
                 customerRes,
                 salesTrendsRes,
                 categorySalesRes,
-                customerSegmentationRes,
+                customerLoyaltyRes,
                 topProductsRes
             ] = await Promise.all([
                 analyticsAPI.getDashboardOverview(params),
@@ -71,7 +71,7 @@ export const AnalyticsPage = () => {
                 analyticsAPI.getCustomerAnalytics(params),
                 analyticsAPI.getSalesTrends({ ...params, period: 'daily' }),
                 analyticsAPI.getCategorySalesData(params),
-                analyticsAPI.getCustomerSegmentationData(params),
+                analyticsAPI.getCustomerLoyaltyStats(params),
                 analyticsAPI.getTopProductsChartData({ ...params, limit: 8, type: 'revenue' })
             ]);
 
@@ -81,7 +81,7 @@ export const AnalyticsPage = () => {
             if (customerRes.success) setCustomerAnalytics(customerRes.data);
             if (salesTrendsRes.success) setSalesTrends(salesTrendsRes.data);
             if (categorySalesRes.success) setCategorySalesData(categorySalesRes.data);
-            if (customerSegmentationRes.success) setCustomerSegmentationData(customerSegmentationRes.data);
+            if (customerLoyaltyRes.success) setCustomerSegmentationData(customerLoyaltyRes.data);
             if (topProductsRes.success) setTopProductsChartData(topProductsRes.data);
 
         } catch (error) {

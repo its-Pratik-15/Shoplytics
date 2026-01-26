@@ -37,8 +37,8 @@ export const analyticsAPI = {
     return response.data;
   },
 
-  getCustomerSegmentationData: async (params = {}) => {
-    const response = await api.get('/analytics/charts/customer-segmentation', { params });
+  getCustomerLoyaltyStats: async (params = {}) => {
+    const response = await api.get('/analytics/charts/customer-loyalty', { params });
     return response.data;
   },
 
