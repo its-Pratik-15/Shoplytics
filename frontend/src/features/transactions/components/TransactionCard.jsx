@@ -147,7 +147,7 @@ export const TransactionCard = ({ transaction, onUpdate }) => {
                         </Button>
                         <Button
                             size="sm"
-                            variant="destructive"
+                            variant="danger"
                             onClick={() => handleStatusUpdate('CANCELLED')}
                             disabled={loading}
                             className="flex-1"

@@ -19,9 +19,8 @@ const Sidebar = ({ isOpen, onClose }) => {
     const navigation = [
         { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-blue-600', roles: ['OWNER', 'ADMIN', 'MANAGER'] },
         { name: 'Checkout Counter', href: '/pos', icon: Calculator, color: 'from-emerald-500 to-emerald-600', roles: ['OWNER', 'ADMIN', 'MANAGER', 'CASHIER'] },
-        { name: 'Bills', href: '/bills', icon: Receipt, color: 'from-teal-500 to-teal-600', roles: ['OWNER', 'ADMIN', 'MANAGER', 'CASHIER'] },
         { name: 'Products', href: '/products', icon: Package, color: 'from-green-500 to-green-600', roles: ['OWNER', 'ADMIN', 'MANAGER'] },
-        { name: 'Transactions', href: '/transactions', icon: ShoppingCart, color: 'from-purple-500 to-purple-600', roles: ['OWNER', 'ADMIN', 'MANAGER'] },
+        { name: 'Transactions', href: '/transactions', icon: ShoppingCart, color: 'from-purple-500 to-purple-600', roles: ['OWNER', 'ADMIN', 'MANAGER', 'CASHIER'] },
         { name: 'Customers', href: '/customers', icon: Users, color: 'from-indigo-500 to-indigo-600', roles: ['OWNER', 'ADMIN', 'MANAGER', 'CASHIER'] },
         { name: 'Feedback', href: '/feedback', icon: MessageSquare, color: 'from-pink-500 to-pink-600', roles: ['OWNER', 'ADMIN', 'MANAGER'] },
         { name: 'Analytics', href: '/analytics', icon: BarChart3, color: 'from-orange-500 to-orange-600', roles: ['OWNER', 'ADMIN', 'MANAGER'] },
@@ -116,7 +115,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 />
             )}
 
-            <style jsx>{`
+            <style>{`
                 @keyframes slideInLeft {
                     from {
                         opacity: 0;

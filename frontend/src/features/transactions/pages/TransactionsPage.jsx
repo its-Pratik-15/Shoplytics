@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import Layout from '../../../shared/components/layout/Layout';
-import Button from '../../../shared/components/ui/Button';
 import Input from '../../../shared/components/ui/Input';
 import { TransactionCard } from '../components/TransactionCard';
 import { TransactionForm } from '../components/TransactionForm';
@@ -8,14 +7,15 @@ import { transactionsAPI } from '../services/transactions.api';
 import { debounce } from '../../../shared/utils';
 import { useAuth } from '../../auth/hooks/useAuth';
 import toast from 'react-hot-toast';
-import { ShoppingCart, Plus, Clock, CheckCircle, Users, UserPlus, Search, Filter, TrendingUp } from 'lucide-react';
+import { ShoppingCart, Plus, Users, Search, TrendingUp } from 'lucide-react';
 
 export const TransactionsPage = () => {
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [statusFilter, setStatusFilter] = useState('');
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
     const { hasRole } = useAuth();
 
     const canCreateTransaction = hasRole(['OWNER', 'ADMIN', 'MANAGER', 'CASHIER']);
@@ -30,14 +30,15 @@ export const TransactionsPage = () => {
         }, 300);
 
         debouncedSearch();
-    }, [searchTerm, statusFilter]);
+    }, [searchTerm, startDate, endDate]);
 
     const fetchTransactions = async () => {
         try {
             setLoading(true);
             const params = {};
             if (searchTerm) params.search = searchTerm;
-            if (statusFilter) params.status = statusFilter;
+            if (startDate) params.startDate = startDate;
+            if (endDate) params.endDate = endDate;
 
             const response = await transactionsAPI.getTransactions(params);
             if (response.success) {
@@ -75,9 +76,9 @@ export const TransactionsPage = () => {
 
     const pendingTransactions = transactions.filter(t => t.status === 'PENDING');
     const completedTransactions = transactions.filter(t => t.status === 'COMPLETED');
-    const newCustomerTransactions = transactions.filter(t => t.customer?.isNewCustomer);
-    const oldCustomerTransactions = transactions.filter(t => t.customer && !t.customer.isNewCustomer);
     const totalRevenue = completedTransactions.reduce((sum, t) => sum + Number(t.total || 0), 0);
+    const totalProducts = completedTransactions.reduce((sum, t) => sum + (t.items?.length || 0), 0);
+    const uniqueCustomers = new Set(transactions.filter(t => t.customer).map(t => t.customer.id)).size;
 
     return (
         <Layout>
@@ -140,11 +141,11 @@ export const TransactionsPage = () => {
                 )}
 
                 {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-blue-100 text-sm font-medium">Total</p>
+                                <p className="text-blue-100 text-sm font-medium">Total Transactions</p>
                                 <p className="text-3xl font-bold mt-1">{transactions.length}</p>
                             </div>
                             <div className="bg-white/20 p-3 rounded-xl">
@@ -153,34 +154,14 @@ export const TransactionsPage = () => {
                         </div>
                     </div>
 
-                    <div className="bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-yellow-100 text-sm font-medium">Pending</p>
-                                <p className="text-3xl font-bold mt-1">{pendingTransactions.length}</p>
-                                <div className="flex items-center mt-1">
-                                    <div className="w-2 h-2 bg-yellow-200 rounded-full animate-pulse"></div>
-                                    <span className="text-yellow-100 text-xs ml-2">Processing</span>
-                                </div>
-                            </div>
-                            <div className="bg-white/20 p-3 rounded-xl">
-                                <Clock className="h-8 w-8" />
-                            </div>
-                        </div>
-                    </div>
-
                     <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-green-100 text-sm font-medium">Completed</p>
-                                <p className="text-3xl font-bold mt-1">{completedTransactions.length}</p>
-                                <div className="flex items-center mt-1">
-                                    <div className="w-2 h-2 bg-green-200 rounded-full"></div>
-                                    <span className="text-green-100 text-xs ml-2">Success</span>
-                                </div>
+                                <p className="text-green-100 text-sm font-medium">Total Amount</p>
+                                <p className="text-3xl font-bold mt-1">₹{Math.round(totalRevenue / 1000)}K</p>
                             </div>
                             <div className="bg-white/20 p-3 rounded-xl">
-                                <CheckCircle className="h-8 w-8" />
+                                <TrendingUp className="h-8 w-8" />
                             </div>
                         </div>
                     </div>
@@ -188,11 +169,11 @@ export const TransactionsPage = () => {
                     <div className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-purple-100 text-sm font-medium">New Customers</p>
-                                <p className="text-3xl font-bold mt-1">{newCustomerTransactions.length}</p>
+                                <p className="text-purple-100 text-sm font-medium">Total Products</p>
+                                <p className="text-3xl font-bold mt-1">{totalProducts}</p>
                             </div>
                             <div className="bg-white/20 p-3 rounded-xl">
-                                <UserPlus className="h-8 w-8" />
+                                <ShoppingCart className="h-8 w-8" />
                             </div>
                         </div>
                     </div>
@@ -200,8 +181,8 @@ export const TransactionsPage = () => {
                     <div className="bg-gradient-to-br from-pink-500 to-red-500 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-pink-100 text-sm font-medium">Returning</p>
-                                <p className="text-3xl font-bold mt-1">{oldCustomerTransactions.length}</p>
+                                <p className="text-pink-100 text-sm font-medium">Number of Customers</p>
+                                <p className="text-3xl font-bold mt-1">{uniqueCustomers}</p>
                             </div>
                             <div className="bg-white/20 p-3 rounded-xl">
                                 <Users className="h-8 w-8" />
@@ -229,20 +210,27 @@ export const TransactionsPage = () => {
                                 />
                             </div>
                         </div>
-                        <div className="lg:w-64">
+                        <div className="lg:w-48">
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Filter by Status
+                                Start Date
                             </label>
-                            <select
-                                value={statusFilter}
-                                onChange={(e) => setStatusFilter(e.target.value)}
+                            <input
+                                type="date"
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)}
                                 className="w-full h-12 px-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
-                            >
-                                <option value="">All Status</option>
-                                <option value="PENDING">⏳ Pending</option>
-                                <option value="COMPLETED">✅ Completed</option>
-                                <option value="CANCELLED">❌ Cancelled</option>
-                            </select>
+                            />
+                        </div>
+                        <div className="lg:w-48">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                End Date
+                            </label>
+                            <input
+                                type="date"
+                                value={endDate}
+                                onChange={(e) => setEndDate(e.target.value)}
+                                className="w-full h-12 px-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                            />
                         </div>
                     </div>
                 </div>
@@ -263,13 +251,14 @@ export const TransactionsPage = () => {
                             </div>
                             <h3 className="text-2xl font-bold text-gray-900 mb-2">No transactions found</h3>
                             <p className="text-gray-500 text-lg mb-6">
-                                {searchTerm || statusFilter ? 'Try adjusting your search filters.' : 'Get started by creating your first transaction.'}
+                                {searchTerm || startDate || endDate ? 'Try adjusting your search filters.' : 'Get started by creating your first transaction.'}
                             </p>
-                            {searchTerm || statusFilter ? (
+                            {searchTerm || startDate || endDate ? (
                                 <button
                                     onClick={() => {
                                         setSearchTerm('');
-                                        setStatusFilter('');
+                                        setStartDate('');
+                                        setEndDate('');
                                     }}
                                     className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                                 >
@@ -307,7 +296,7 @@ export const TransactionsPage = () => {
                 )}
             </div>
 
-            <style jsx>{`
+            <style>{`
                 @keyframes fadeInUp {
                     from {
                         opacity: 0;

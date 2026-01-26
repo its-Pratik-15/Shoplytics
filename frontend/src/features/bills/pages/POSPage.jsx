@@ -1,17 +1,14 @@
 import { useState, useRef } from 'react';
-import { useReactToPrint } from 'react-to-print';
 import Layout from '../../../shared/components/layout/Layout';
 import ProductSelector from '../components/ProductSelector';
 import BillCart from '../components/BillCart';
 import CustomerSelector from '../components/CustomerSelector';
-import BillReceipt from '../components/BillReceipt';
 import { billsAPI } from '../services/bills.api';
 import { useAuth } from '../../auth/hooks/useAuth';
 import toast from 'react-hot-toast';
 import {
     CreditCard,
     Banknote,
-    Printer,
     Save,
     RefreshCw,
     Receipt
@@ -28,9 +25,6 @@ const POSPage = () => {
     const paymentMethodRef = useRef('cash');
     const discountRef = useRef(0);
     const discountTypeRef = useRef('percentage');
-
-    const receiptRef = useRef();
-    const { user } = useAuth();
 
     // Calculate totals using ref values
     const subtotal = billItems.reduce((sum, item) => sum + (item.sellingPrice * item.quantity), 0);
@@ -127,11 +121,6 @@ const POSPage = () => {
             if (response.success) {
                 setCurrentBill(response.data);
                 toast.success('Bill created successfully!');
-
-                // Auto-print after successful bill creation
-                setTimeout(() => {
-                    handlePrint();
-                }, 500);
             }
         } catch (error) {
             toast.error('Failed to create bill');
@@ -140,30 +129,6 @@ const POSPage = () => {
             setLoading(false);
         }
     };
-
-    const handlePrint = useReactToPrint({
-        content: () => receiptRef.current,
-        documentTitle: `Bill-${currentBill?.id || 'Draft'}`,
-        onBeforeGetContent: () => {
-            // Ensure the receipt content is ready
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve();
-                }, 100);
-            });
-        },
-        onAfterPrint: () => {
-            toast.success('Receipt printed successfully!');
-            // Clear the bill after printing
-            setTimeout(() => {
-                handleClearCart();
-            }, 1000);
-        },
-        onPrintError: (error) => {
-            console.error('Print error:', error);
-            toast.error('Failed to print receipt');
-        }
-    });
 
     const handleSaveDraft = () => {
         if (billItems.length === 0) {
@@ -314,39 +279,14 @@ const POSPage = () => {
                                         ) : (
                                             <>
                                                 <Receipt className="h-5 w-5" />
-                                                <span>Process Bill & Print</span>
+                                                <span>Process Bill</span>
                                             </>
                                         )}
                                     </button>
-
-                                    {currentBill && (
-                                        <button
-                                            onClick={handlePrint}
-                                            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center space-x-2"
-                                        >
-                                            <Printer className="h-5 w-5" />
-                                            <span>Print Receipt</span>
-                                        </button>
-                                    )}
                                 </div>
                             </div>
                         )}
                     </div>
-                </div>
-
-                {/* Hidden Receipt for Printing */}
-                <div style={{ display: 'none' }}>
-                    <BillReceipt
-                        ref={receiptRef}
-                        bill={currentBill}
-                        customer={selectedCustomer}
-                        items={billItems}
-                        discount={discountRef.current}
-                        discountAmount={discountAmount}
-                        subtotal={subtotal}
-                        tax={tax}
-                        total={total}
-                    />
                 </div>
             </div>
         </Layout>

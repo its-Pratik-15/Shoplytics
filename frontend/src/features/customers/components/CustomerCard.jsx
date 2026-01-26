@@ -7,17 +7,19 @@ import toast from 'react-hot-toast';
 
 export const CustomerCard = ({ customer, onEdit, onDelete }) => {
     const [loading, setLoading] = useState(false);
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-    const handleDelete = async () => {
-        if (!window.confirm('Are you sure you want to delete this customer?')) {
-            return;
-        }
+    const handleDeleteClick = () => {
+        setShowDeleteDialog(true);
+    };
 
+    const handleDeleteConfirm = async () => {
         try {
             setLoading(true);
             await customersAPI.deleteCustomer(customer.id);
             toast.success('Customer deleted successfully');
             onDelete(customer.id);
+            setShowDeleteDialog(false);
         } catch (error) {
             const message = error.response?.data?.error?.message || 'Failed to delete customer';
             toast.error(message);
@@ -26,11 +28,24 @@ export const CustomerCard = ({ customer, onEdit, onDelete }) => {
         }
     };
 
+    const handleDeleteCancel = () => {
+        setShowDeleteDialog(false);
+    };
+
     const isVIPCustomer = customer.totalSpending >= 10000;
+    const isLoyalCustomer = customer.visitCount >= 3;
+
     const getCustomerTypeColor = (isNewCustomer) => {
         return isNewCustomer
             ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white'
             : 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white';
+    };
+
+    const getLoyaltyColor = (visitCount) => {
+        if (visitCount >= 3) {
+            return 'bg-gradient-to-r from-purple-500 to-pink-500 text-white';
+        }
+        return 'bg-gradient-to-r from-gray-400 to-gray-500 text-white';
     };
 
     const getCustomerTypeIcon = (isNewCustomer) => {
@@ -79,7 +94,13 @@ export const CustomerCard = ({ customer, onEdit, onDelete }) => {
                             )}
                             <span className={`px-3 py-1 rounded-full text-xs font-bold flex items-center space-x-1 ${getCustomerTypeColor(customer.isNewCustomer)}`}>
                                 {getCustomerTypeIcon(customer.isNewCustomer)}
-                                <span>{customer.isNewCustomer ? 'New Customer' : 'Loyal Customer'}</span>
+                                <span>{customer.isNewCustomer ? 'New Customer' : 'Old Customer'}</span>
+                            </span>
+                            <span className={`px-3 py-1 rounded-full text-xs font-bold flex items-center space-x-1 ${getLoyaltyColor(customer.visitCount)}`}>
+                                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                                </svg>
+                                <span>{isLoyalCustomer ? 'Loyal' : 'Regular'} ({customer.visitCount || 0} visits)</span>
                             </span>
                         </div>
                     </div>
@@ -178,23 +199,14 @@ export const CustomerCard = ({ customer, onEdit, onDelete }) => {
                                 <Button
                                     variant="destructive"
                                     size="sm"
-                                    onClick={handleDelete}
+                                    onClick={handleDeleteClick}
                                     disabled={loading}
                                     className="flex-1 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white rounded-xl font-semibold transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-2"
                                 >
-                                    {loading ? (
-                                        <>
-                                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                                            <span>Deleting...</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
-                                            <span>Delete</span>
-                                        </>
-                                    )}
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    <span>Delete</span>
                                 </Button>
                             )}
                         </div>
@@ -204,6 +216,58 @@ export const CustomerCard = ({ customer, onEdit, onDelete }) => {
                 {/* Hover effect overlay */}
                 <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-2xl"></div>
             </Card>
+
+            {/* Delete Confirmation Dialog */}
+            {showDeleteDialog && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
+                        <div className="flex items-center mb-4">
+                            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
+                                <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-semibold text-gray-900">Delete Customer</h3>
+                                <p className="text-sm text-gray-500">This action cannot be undone</p>
+                            </div>
+                        </div>
+
+                        <div className="mb-6">
+                            <p className="text-gray-700">
+                                Are you sure you want to delete <span className="font-semibold">{customer.name}</span>?
+                                This will permanently remove the customer and all associated data.
+                            </p>
+                        </div>
+
+                        <div className="flex gap-3">
+                            <Button
+                                variant="outline"
+                                onClick={handleDeleteCancel}
+                                disabled={loading}
+                                className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50"
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                variant="destructive"
+                                onClick={handleDeleteConfirm}
+                                disabled={loading}
+                                className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                            >
+                                {loading ? (
+                                    <>
+                                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+                                        Deleting...
+                                    </>
+                                ) : (
+                                    'Delete Customer'
+                                )}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
