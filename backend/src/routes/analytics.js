@@ -52,10 +52,10 @@ router.get('/charts/categories',
   analyticsController.getCategorySalesData
 );
 
-// GET /api/analytics/charts/customer-segmentation - Get customer segmentation data for charts
-router.get('/charts/customer-segmentation', 
+// GET /api/analytics/charts/customer-loyalty - Get customer loyalty statistics
+router.get('/charts/customer-loyalty', 
   ...analyticsAuth,
-  analyticsController.getCustomerSegmentationData
+  analyticsController.getCustomerLoyaltyStats
 );
 
 // GET /api/analytics/charts/top-products - Get top products chart data

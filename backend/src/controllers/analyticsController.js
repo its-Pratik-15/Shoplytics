@@ -153,16 +153,16 @@ const getCategorySalesData = async (req, res, next) => {
   }
 };
 
-const getCustomerSegmentationData = async (req, res, next) => {
+const getCustomerLoyaltyStats = async (req, res, next) => {
   try {
     const filters = validateDateFilters(req.query);
     
-    const segmentationData = await analyticsService.getCustomerSegmentationData(filters);
+    const loyaltyStats = await analyticsService.getCustomerLoyaltyStats(filters);
     
     res.json({
       success: true,
-      data: segmentationData,
-      message: 'Customer segmentation data retrieved successfully'
+      data: loyaltyStats,
+      message: 'Customer loyalty statistics retrieved successfully'
     });
   } catch (error) {
     next(error);
@@ -200,6 +200,6 @@ module.exports = {
   getFeedbackSpendingInsights,
   getDashboardOverview,
   getCategorySalesData,
-  getCustomerSegmentationData,
+  getCustomerLoyaltyStats,
   getTopProductsChartData
 };
