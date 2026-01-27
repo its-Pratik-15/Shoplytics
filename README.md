@@ -6,6 +6,30 @@ A comprehensive, full-stack retail management solution built with modern web tec
 
 Shoplytics is a production-ready Point of Sale and Analytics platform that demonstrates advanced full-stack development capabilities, modern UI/UX design principles, and enterprise-level architecture patterns. The application showcases proficiency in React.js, Node.js, PostgreSQL, and modern development practices.
 
+## 🎥 Feature Demonstrations
+
+Experience Shoplytics in action with comprehensive video walkthroughs and screenshots:
+
+### **Video Walkthroughs**
+- **[Dashboard Overview](./docs/videos/dashboard.mov)** - Main dashboard with real-time metrics and analytics
+- **[Analytics Dashboard](./docs/videos/analytics.mov)** - Business intelligence with sales trends and insights  
+- **[Customer Management](./docs/videos/customer.mov)** - Customer profiles, loyalty system, and CRM features
+- **[Product Management](./docs/videos/products.mov)** - Inventory management and product catalog
+- **[Transaction Management](./docs/videos/transaction.mov)** - Transaction processing and history
+- **[Feedback System](./docs/videos/feedback.mov)** - QR code generation and customer feedback collection
+
+### **Screenshots Available**
+- Authentication pages (login/register)
+- Dashboard overview with key metrics
+- Analytics charts and business insights
+- Customer management interface
+- Product inventory management
+- Transaction history and processing
+- Feedback collection system
+- Checkout counter interface
+
+*All demonstration materials are located in the [`docs/`](./docs/) directory.*
+
 ## Technical Architecture
 
 ### Frontend Stack
