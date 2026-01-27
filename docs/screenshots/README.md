@@ -1,187 +1,184 @@
-# Screenshots
+# Videos & Screenshots
 
-This folder contains screenshots of the Shoplytics application for documentation purposes.
+This folder contains videos and screenshots of the Shoplytics application for documentation purposes.
 
 ## 📁 Folder Structure
 
 ```
-screenshots/
-├── README.md                 # This file
-├── landing/                  # Landing page screenshots
-│   ├── hero-section.png
-│   ├── features-section.png
-│   ├── testimonials.png
-│   └── pricing-section.png
-├── auth/                     # Authentication pages
-│   ├── login-page.png
-│   ├── register-page.png
-│   └── demo-credentials.png
-├── dashboard/                # Dashboard screenshots
-│   ├── dashboard-overview.png
-│   ├── stats-cards.png
-│   ├── recent-activity.png
-│   └── quick-actions.png
-├── products/                 # Product management
-│   ├── products-list.png
-│   ├── product-form.png
-│   ├── product-edit.png
-│   └── product-filters.png
-├── transactions/             # Transaction management
-│   ├── transactions-list.png
-│   ├── transaction-form.png
-│   ├── transaction-details.png
-│   └── transaction-stats.png
-├── customers/                # Customer management
-│   ├── customers-list.png
-│   ├── customer-form.png
-│   ├── customer-profile.png
-│   └── customer-stats.png
-├── feedback/                 # Feedback system
-│   ├── feedback-list.png
-│   ├── feedback-form.png
-│   ├── qr-generator.png
-│   └── customer-feedback.png
-├── analytics/                # Analytics dashboard
-│   ├── analytics-overview.png
-│   ├── sales-trends.png
-│   ├── most-selling.png
-│   ├── highest-revenue.png
-│   └── customer-analytics.png
-├── mobile/                   # Mobile responsive views
-│   ├── mobile-dashboard.png
-│   ├── mobile-sidebar.png
-│   ├── mobile-products.png
-│   └── mobile-transactions.png
-└── features/                 # Feature highlights
-    ├── modern-ui.png
-    ├── role-based-access.png
-    ├── real-time-updates.png
-    └── responsive-design.png
+docs/
+├── videos/                   # Feature demonstration videos (MOV format)
+│   ├── analytics.mov         # Analytics dashboard with charts
+│   ├── customer.mov          # Customer management with loyalty
+│   ├── dashboard.mov         # Main dashboard overview
+│   ├── feedback.mov          # Feedback management system
+│   ├── products.mov          # Product inventory management
+│   └── transaction.mov       # Transaction management
+└── screenshots/              # Static screenshots (PNG format)
+    ├── checkout.png          # Checkout counter interface
+    ├── sign_up.png           # Registration page
+    ├── sign_in.png           # Login page
+    ├── analytics.png         # Analytics dashboard with charts
+    ├── customer.png          # Customer management interface
+    ├── dashboard.png         # Main dashboard overview
+    ├── feedback-form.png     # Feedback form interface
+    ├── feedback-page.png     # Customer feedback page
+    ├── new-product-add.png   # Add new product form
+    ├── inventory.png         # Product inventory management
+    └── transaction.png       # Transaction management interface
 ```
 
-## 📸 Screenshot Guidelines
+## 🎥 Video Guidelines
 
-When taking screenshots for documentation:
+Individual page videos are perfect for showcasing each feature clearly and focused.
 
-### 1. **Resolution & Quality**
-- Use **1920x1080** resolution for desktop screenshots
-- Use **375x812** (iPhone X) for mobile screenshots
-- Save as **PNG** format for best quality
-- Ensure high DPI/retina quality
+### 1. **Video Specifications**
+- **Resolution**: 1920x1080 (Full HD) minimum
+- **Frame Rate**: 30 FPS or 60 FPS
+- **Format**: MP4 (H.264 codec) or MOV (QuickTime)
+- **Duration**: 15 seconds to 1 minute per page
+- **Audio**: Optional, not required for page showcases
 
 ### 2. **Content Guidelines**
-- Use **realistic demo data** (Indian names, products, currency)
-- Show **meaningful interactions** (hover states, active elements)
-- Include **sample data** that represents real usage
-- Avoid **empty states** unless specifically documenting them
+- **Show complete page** (full page view)
+- **Include realistic demo data** (Indian names, products, currency in ₹)
+- **Show key interactions** (hover effects, button clicks, form interactions)
+- **Include loading states** if applicable
+- **Show responsive behavior** if relevant
 
-### 3. **Naming Convention**
+### 3. **Video Naming Convention**
 - Use **kebab-case** for file names
-- Be **descriptive** but concise
-- Include **page/feature** name in filename
-- Example: `dashboard-overview.png`, `product-form-validation.png`
+- Include **"page"** in the filename for clarity
+- **Supported formats**: `.mp4`, `.mov`
+- Example: `dashboard-page.mov`, `products-page.mov`
 
-### 4. **Browser Settings**
+### 4. **Recording Settings**
 - Use **Chrome** or **Safari** for consistency
-- Hide **browser UI** (use full-screen mode)
-- Ensure **clean browser state** (no extensions visible)
-- Use **consistent zoom level** (100%)
+- **Hide browser UI** (use full-screen mode or crop)
+- **Clean browser state** (no extensions, bookmarks bar hidden)
+- **Consistent cursor movement** (smooth, not too fast)
+- **Pause briefly** on important elements
 
-### 5. **Annotation Guidelines**
-- Add **callouts** for important features
-- Use **consistent colors** for annotations
-- Keep **text readable** with proper contrast
-- Highlight **key interactions** or buttons
+## 🎬 Available Media
 
-## 🎨 Screenshot Tools
+### **Feature Videos** (Located in `docs/videos/`):
 
-Recommended tools for taking screenshots:
+#### 1. **`analytics.mov`**
+- **Content**: Complete analytics dashboard with charts and insights
+- **Features**: Sales trends, customer loyalty charts, feedback analytics
 
-### Desktop Tools
-- **macOS**: Screenshot app (Cmd+Shift+5)
-- **Windows**: Snipping Tool or Snip & Sketch
-- **Linux**: GNOME Screenshot or Spectacle
-- **Cross-platform**: Lightshot, Greenshot
+#### 2. **`customer.mov`**
+- **Content**: Customer management system with loyalty tracking
+- **Features**: Customer list, loyalty badges, customer profiles and management
 
-### Browser Extensions
-- **Awesome Screenshot** - Full page screenshots
-- **FireShot** - Capture entire web pages
-- **Nimbus Screenshot** - Advanced editing features
+#### 3. **`dashboard.mov`**
+- **Content**: Main dashboard overview with key metrics
+- **Features**: Stats cards, charts, recent activity, quick actions
 
-### Professional Tools
-- **CleanShot X** (macOS) - Professional screenshot tool
-- **Snagit** - Cross-platform with editing
-- **Figma** - For creating annotated screenshots
+#### 4. **`feedback.mov`**
+- **Content**: Feedback management system
+- **Features**: QR code generation, feedback collection, rating management
+
+#### 5. **`products.mov`**
+- **Content**: Product inventory management
+- **Features**: Product list, filters, add/edit products, inventory tracking
+
+#### 6. **`transaction.mov`**
+- **Content**: Transaction management system
+- **Features**: Transaction history, date filters, transaction statistics
+
+### **Screenshots** (Located in `docs/screenshots/`):
+
+- **`checkout.png`** - Checkout counter interface
+- **`sign_up.png`** - Registration page interface
+- **`sign_in.png`** - Login page interface
+- **`analytics.png`** - Analytics dashboard with charts
+- **`customer.png`** - Customer management interface
+- **`dashboard.png`** - Main dashboard overview
+- **`feedback-form.png`** - Feedback form interface
+- **`feedback-page.png`** - Customer feedback page
+- **`new-product-add.png`** - Add new product form
+- **`inventory.png`** - Product inventory management
+- **`transaction.png`** - Transaction management interface
+
+## 🛠️ Video Recording Tools
+
+### **Free Tools**
+- **OBS Studio** (Cross-platform) - Professional screen recording
+- **QuickTime Player** (macOS) - Simple screen recording
+- **Windows Game Bar** (Windows) - Built-in screen recorder
+- **Chrome DevTools** - Built-in device simulation
+
+### **Paid Tools**
+- **Camtasia** - Professional editing with annotations
+- **ScreenFlow** (macOS) - High-quality screen recording
+- **Loom** - Quick recording with easy sharing
+- **CleanShot X** (macOS) - Professional screenshots and videos
+
+### **Browser Extensions**
+- **Loom** - Quick browser-based recording
+- **Screencastify** - Chrome extension for recording
+- **Nimbus Screenshot** - Screenshots and short videos
 
 ## 📝 Usage in Documentation
 
-Screenshots are referenced in documentation using relative paths:
-
+### **Video Embedding in README**
 ```markdown
-![Dashboard Overview](./screenshots/dashboard/dashboard-overview.png)
+## 🎥 Feature Demonstrations
 
-*The main dashboard showing key business metrics and recent activity*
-```
+### Dashboard Overview
+[![Dashboard Demo](./docs/screenshots/dashboard/dashboard-overview.png)](./docs/screenshots/videos/dashboard-overview.mp4)
 
-### README Integration
-```markdown
-## 🖼️ Screenshots
-
-### Landing Page
-![Landing Page](./docs/screenshots/landing/hero-section.png)
-
-### Dashboard
-![Dashboard](./docs/screenshots/dashboard/dashboard-overview.png)
+*Click to watch the dashboard demonstration video*
 
 ### Product Management
-![Products](./docs/screenshots/products/products-list.png)
+[![Product Management](./docs/screenshots/products/products-list.png)](./docs/screenshots/videos/product-management.mp4)
+
+*Complete product CRUD operations walkthrough*
 ```
 
-## 🔄 Updating Screenshots
+### **Video Hosting Options**
+1. **GitHub Repository** - Direct MP4 files (limited by file size)
+2. **YouTube** - Unlisted videos for public repos
+3. **Vimeo** - Professional hosting with privacy controls
+4. **GitHub Releases** - For larger video files
+5. **CDN/Cloud Storage** - AWS S3, Google Cloud, etc.
 
-When updating screenshots:
+## 📋 Video Recording Checklist
 
-1. **Check for UI changes** - Update after major UI modifications
-2. **Maintain consistency** - Use same demo data across screenshots
-3. **Update documentation** - Ensure README references are current
-4. **Version control** - Commit screenshot updates with descriptive messages
+Before recording feature videos:
 
-## 📋 Screenshot Checklist
+- [ ] **Clean demo data** - Realistic Indian context
+- [ ] **Browser setup** - Full screen, no distractions
+- [ ] **Smooth interactions** - Not too fast, not too slow
+- [ ] **Complete workflows** - Start to finish demonstrations
+- [ ] **Error scenarios** - Show validation and error handling
+- [ ] **Loading states** - Include realistic loading times
+- [ ] **Responsive views** - Show mobile/tablet layouts
+- [ ] **Audio quality** - Clear narration if included
+- [ ] **File optimization** - Compressed but high quality
+- [ ] **Consistent branding** - Logo and colors visible
 
-Before adding screenshots to documentation:
+## 🎯 Video Priority List
 
-- [ ] **High quality** - Clear, crisp image
-- [ ] **Proper resolution** - 1920x1080 for desktop
-- [ ] **Realistic data** - Indian context with meaningful content
-- [ ] **Clean interface** - No debug info or development artifacts
-- [ ] **Consistent styling** - Matches current UI design
-- [ ] **Proper naming** - Follows naming convention
-- [ ] **Correct folder** - Placed in appropriate category folder
-- [ ] **Documentation updated** - README references added/updated
+### **Must Have** (for landing page and README):
+1. ✅ Landing page demo
+2. ✅ Dashboard overview  
+3. ✅ Product management
+4. ✅ Checkout counter
+5. ✅ Analytics dashboard
 
-## 🎯 Priority Screenshots
+### **Should Have** (for comprehensive documentation):
+6. ⏳ Customer management
+7. ⏳ Feedback system
+8. ⏳ Transaction management
+9. ⏳ Mobile responsive
 
-Essential screenshots needed for documentation:
-
-### High Priority
-- [ ] Landing page hero section
-- [ ] Dashboard overview
-- [ ] Product list and form
-- [ ] Transaction management
-- [ ] Analytics dashboard
-
-### Medium Priority
-- [ ] Customer management
-- [ ] Feedback system
-- [ ] Mobile responsive views
-- [ ] Authentication pages
-
-### Low Priority
-- [ ] Feature highlights
-- [ ] Error states
-- [ ] Loading states
-- [ ] Edge cases
+### **Nice to Have** (for detailed feature docs):
+10. ⏳ Authentication flow
+11. ⏳ Role-based access
+12. ⏳ Real-time updates
+13. ⏳ Error handling
 
 ---
 
-**Note**: Screenshots should be updated regularly to reflect the current state of the application and maintain accurate documentation.
+**Note**: Videos provide a much better user experience than static screenshots and are highly recommended for showcasing the dynamic features of Shoplytics.
