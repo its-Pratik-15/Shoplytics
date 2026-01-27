@@ -550,11 +550,6 @@ const DashboardPage = () => {
                 <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-xl font-bold text-gray-900">Sales Performance</h2>
-                        <div className="flex space-x-2">
-                            <button className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">7D</button>
-                            <button className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">30D</button>
-                            <button className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">90D</button>
-                        </div>
                     </div>
                     <div className="h-64">
                         <LineChart
