@@ -19,15 +19,12 @@ import {
     PieChart,
     Target,
     Sparkles,
-    ChevronRight,
-    Menu,
-    X
+    ChevronRight
 } from 'lucide-react';
-import Logo from '../../../shared/components/ui/Logo';
+import PublicNavbar from '../../../shared/components/layout/PublicNavbar';
 import Footer from '../../../shared/components/layout/Footer';
 
 const LandingPage = () => {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
     const features = [
@@ -115,62 +112,7 @@ const LandingPage = () => {
 
     return (
         <div className="min-h-screen bg-white overflow-x-hidden">
-            {/* Header */}
-            <header className="fixed top-0 w-full bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100 z-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <Logo size="md" showText={true} />
-
-                        {/* Desktop Navigation */}
-                        <nav className="hidden md:flex items-center space-x-8">
-                            <a href="#features" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">Features</a>
-                            <a href="#pricing" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">Pricing</a>
-                            <a href="#testimonials" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">Reviews</a>
-                        </nav>
-
-                        <div className="hidden md:flex items-center space-x-4">
-                            <Link
-                                to="/login"
-                                className="text-gray-600 hover:text-gray-900 px-4 py-2 text-sm font-medium transition-colors"
-                            >
-                                Sign In
-                            </Link>
-                            <Link
-                                to="/register"
-                                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-full text-sm font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
-                            >
-                                Start Free Trial
-                            </Link>
-                        </div>
-
-                        {/* Mobile menu button */}
-                        <button
-                            onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            className="md:hidden p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-                        >
-                            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-                        </button>
-                    </div>
-
-                    {/* Mobile Navigation */}
-                    {isMenuOpen && (
-                        <div className="md:hidden py-4 border-t border-gray-100">
-                            <div className="flex flex-col space-y-4">
-                                <a href="#features" className="text-gray-600 hover:text-blue-600 font-medium">Features</a>
-                                <a href="#pricing" className="text-gray-600 hover:text-blue-600 font-medium">Pricing</a>
-                                <a href="#testimonials" className="text-gray-600 hover:text-blue-600 font-medium">Reviews</a>
-                                <Link to="/login" className="text-gray-600 hover:text-gray-900 font-medium">Sign In</Link>
-                                <Link
-                                    to="/register"
-                                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-full text-sm font-semibold text-center"
-                                >
-                                    Start Free Trial
-                                </Link>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </header>
+            <PublicNavbar />
 
             {/* Hero Section */}
             <section className="relative pt-20 pb-32 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 overflow-hidden">
