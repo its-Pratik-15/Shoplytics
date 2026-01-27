@@ -2,6 +2,30 @@
 
 Welcome to the Shoplytics documentation! This comprehensive guide will help you understand, set up, and use the Shoplytics Point of Sale and Analytics system.
 
+## 🎥 Feature Demonstrations
+
+Shoplytics includes comprehensive video demonstrations and screenshots of all major features:
+
+### **Video Walkthroughs** (MOV format)
+- **[Dashboard Overview](./docs/videos/dashboard.mov)** - Main dashboard with key metrics and charts
+- **[Analytics Dashboard](./docs/videos/analytics.mov)** - Complete analytics with sales trends and insights  
+- **[Customer Management](./docs/videos/customer.mov)** - Customer profiles and loyalty system
+- **[Product Management](./docs/videos/products.mov)** - Inventory management and product catalog
+- **[Transaction Management](./docs/videos/transaction.mov)** - Transaction history and statistics
+- **[Feedback System](./docs/videos/feedback.mov)** - QR code generation and feedback collection
+
+### **Screenshots**
+- **Authentication**: Login and registration pages
+- **Dashboard**: Main overview with key metrics
+- **Analytics**: Charts and business insights
+- **Customers**: Customer management interface
+- **Products**: Inventory and product management
+- **Transactions**: Transaction history and management
+- **Feedback**: Customer feedback collection
+- **Checkout Counter**: Point of sale interface
+
+*All media files are located in the [`docs/`](./docs/) directory. See [Videos & Screenshots Guide](./docs/screenshots/README.md) for complete documentation.*
+
 ## 📚 Documentation Structure
 
 - [**Getting Started**](./getting-started.md) - Quick setup and installation guide
