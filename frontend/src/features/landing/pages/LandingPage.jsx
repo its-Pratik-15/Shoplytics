@@ -31,44 +31,50 @@ const LandingPage = () => {
         {
             icon: ShoppingCart,
             title: 'Smart Checkout Counter',
-            description: 'Lightning-fast checkout with intelligent inventory tracking and automated stock alerts.',
+            description: 'Lightning-fast checkout with real-time inventory tracking and automated stock management.',
             color: 'from-blue-500 to-cyan-500',
-            stats: '99.9% Uptime'
+            stats: 'Real-time Updates',
+            video: '/products.mov'
         },
         {
             icon: BarChart3,
-            title: 'AI-Powered Analytics',
-            description: 'Get actionable insights with machine learning-driven sales forecasting and trend analysis.',
+            title: 'Advanced Analytics',
+            description: 'Comprehensive sales analytics with customer loyalty insights and revenue tracking dashboards.',
             color: 'from-purple-500 to-pink-500',
-            stats: '50+ Reports'
+            stats: 'Multiple Charts',
+            video: '/analytics.mov'
         },
         {
             icon: Users,
-            title: 'Customer Intelligence',
-            description: 'Build stronger relationships with detailed customer profiles and purchase behavior analysis.',
+            title: 'Customer Management',
+            description: 'Complete customer profiles with loyalty tracking, visit counts, and purchase history analysis.',
             color: 'from-green-500 to-emerald-500',
-            stats: 'Unlimited Customers'
+            stats: 'Loyalty System',
+            video: '/customer.mov'
         },
         {
             icon: TrendingUp,
-            title: 'Revenue Optimization',
-            description: 'Maximize profits with dynamic pricing insights and margin analysis across all products.',
+            title: 'Transaction Management',
+            description: 'Complete transaction history with date filtering, statistics, and detailed transaction records.',
             color: 'from-orange-500 to-red-500',
-            stats: '30% Avg Growth'
+            stats: 'Full History',
+            video: '/transaction.mov'
         },
         {
             icon: Shield,
-            title: 'Enterprise Security',
-            description: 'Bank-level encryption with role-based access control and comprehensive audit trails.',
+            title: 'Role-Based Access',
+            description: 'Secure user management with role-based permissions for Owner, Manager, and Cashier roles.',
             color: 'from-indigo-500 to-purple-500',
-            stats: 'ISO 27001 Certified'
+            stats: 'Multi-User Support',
+            video: '/dashboard.mov'
         },
         {
             icon: Zap,
-            title: 'Real-time Sync',
-            description: 'Instant updates across all devices with cloud-based synchronization and offline support.',
+            title: 'Feedback System',
+            description: 'QR code-based customer feedback collection with rating management and insights.',
             color: 'from-yellow-500 to-orange-500',
-            stats: '<100ms Response'
+            stats: 'QR Integration',
+            video: '/feedback.mov'
         }
     ];
 
@@ -97,10 +103,10 @@ const LandingPage = () => {
     ];
 
     const stats = [
-        { number: '10,000+', label: 'Happy Merchants', icon: Users },
-        { number: '₹500Cr+', label: 'Transactions Processed', icon: CreditCard },
-        { number: '99.9%', label: 'Uptime Guarantee', icon: Shield },
-        { number: '24/7', label: 'Expert Support', icon: Clock }
+        { number: '1,000+', label: 'Transactions Processed', icon: CreditCard },
+        { number: '100+', label: 'Products Managed', icon: Users },
+        { number: '99%', label: 'Customer Satisfaction', icon: Shield },
+        { number: '24/7', label: 'System Availability', icon: Clock }
     ];
 
     useEffect(() => {
@@ -127,7 +133,7 @@ const LandingPage = () => {
                         {/* Badge */}
                         <div className="inline-flex items-center px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-blue-200 mb-8">
                             <Sparkles className="h-4 w-4 text-blue-600 mr-2" />
-                            <span className="text-sm font-semibold text-blue-600">India's #1 Smart Checkout Counter Solution</span>
+                            <span className="text-sm font-semibold text-blue-600">Complete Retail Management Solution</span>
                         </div>
 
                         <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
@@ -138,8 +144,8 @@ const LandingPage = () => {
                         </h1>
 
                         <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed">
-                            The most advanced Checkout Counter system with AI-powered analytics.
-                            <span className="font-semibold text-gray-800"> Increase sales by 40%</span> and streamline operations with real-time insights.
+                            Complete Point of Sale system with advanced analytics and customer management.
+                            <span className="font-semibold text-gray-800"> Streamline operations</span> and grow your business with real-time insights.
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
@@ -147,10 +153,13 @@ const LandingPage = () => {
                                 to="/register"
                                 className="group bg-gradient-to-r from-blue-600 to-purple-600 text-white px-10 py-4 rounded-2xl text-lg font-bold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-blue-500/25 flex items-center justify-center"
                             >
-                                Start Free 30-Day Trial
+                                Get Started Free
                                 <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" />
                             </Link>
-                            <button className="group border-2 border-gray-300 text-gray-700 px-10 py-4 rounded-2xl text-lg font-bold hover:bg-gray-50 transition-all duration-300 flex items-center justify-center hover:border-gray-400">
+                            <button
+                                onClick={() => window.open('/dashboard.mov', '_blank')}
+                                className="group border-2 border-gray-300 text-gray-700 px-10 py-4 rounded-2xl text-lg font-bold hover:bg-gray-50 transition-all duration-300 flex items-center justify-center hover:border-gray-400"
+                            >
                                 <Play className="mr-3 h-6 w-6 text-blue-600" />
                                 Watch Demo
                             </button>
@@ -160,15 +169,15 @@ const LandingPage = () => {
                         <div className="flex flex-wrap justify-center items-center gap-8 text-sm text-gray-500">
                             <div className="flex items-center">
                                 <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                                No setup fees
+                                Easy setup
                             </div>
                             <div className="flex items-center">
                                 <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                                Cancel anytime
+                                Secure & reliable
                             </div>
                             <div className="flex items-center">
                                 <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                                24/7 support
+                                Full-featured
                             </div>
                         </div>
                     </div>
@@ -176,11 +185,44 @@ const LandingPage = () => {
                     {/* Hero Image/Dashboard Preview */}
                     <div className="mt-20 relative">
                         <div className="bg-white rounded-3xl shadow-2xl border border-gray-200 p-8 max-w-5xl mx-auto transform hover:scale-105 transition-transform duration-500">
-                            <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-6 h-96 flex items-center justify-center">
-                                <div className="text-center">
-                                    <BarChart3 className="h-24 w-24 text-blue-600 mx-auto mb-4" />
-                                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Live Dashboard Preview</h3>
-                                    <p className="text-gray-600">Real-time analytics and insights at your fingertips</p>
+                            <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-2 overflow-hidden relative">
+                                <video
+                                    autoPlay
+                                    loop
+                                    muted
+                                    playsInline
+                                    className="w-full h-96 object-cover rounded-xl"
+                                    onError={(e) => {
+                                        // Fallback to placeholder if video fails to load
+                                        e.target.style.display = 'none';
+                                        e.target.nextElementSibling.style.display = 'flex';
+                                    }}
+                                >
+                                    <source src="/dashboard.mov" type="video/mp4" />
+                                    <source src="/dashboard.mov" type="video/quicktime" />
+                                    Your browser does not support the video tag.
+                                </video>
+                                {/* Fallback placeholder */}
+                                <div className="w-full h-96 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl flex items-center justify-center" style={{ display: 'none' }}>
+                                    <div className="text-center">
+                                        <BarChart3 className="h-24 w-24 text-blue-600 mx-auto mb-4" />
+                                        <h3 className="text-2xl font-bold text-gray-900 mb-2">Live Dashboard Preview</h3>
+                                        <p className="text-gray-600">Real-time analytics and insights</p>
+                                        <button
+                                            onClick={() => window.open('/dashboard.mov', '_blank')}
+                                            className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center mx-auto"
+                                        >
+                                            <Play className="h-4 w-4 mr-2" />
+                                            Watch Video
+                                        </button>
+                                    </div>
+                                </div>
+                                {/* Video overlay info */}
+                                <div className="absolute bottom-4 left-4 bg-black/70 text-white px-4 py-2 rounded-lg backdrop-blur-sm">
+                                    <div className="flex items-center space-x-2">
+                                        <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                                        <span className="text-sm font-medium">Live Dashboard Demo</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -233,7 +275,7 @@ const LandingPage = () => {
                             </span>
                         </h2>
                         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                            Advanced features designed by retail experts to help you increase sales, reduce costs, and delight customers.
+                            Comprehensive features designed for modern retail businesses to manage sales, inventory, customers, and analytics.
                         </p>
                     </div>
 
@@ -241,14 +283,20 @@ const LandingPage = () => {
                         {features.map((feature, index) => (
                             <div
                                 key={index}
-                                className="group bg-white p-8 rounded-3xl border border-gray-100 hover:border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2"
+                                onClick={() => window.open(feature.video, '_blank')}
+                                className="group bg-white p-8 rounded-3xl border border-gray-100 hover:border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 cursor-pointer"
                                 style={{
                                     animationDelay: `${index * 100}ms`,
                                     animation: 'fadeInUp 0.6s ease-out forwards'
                                 }}
                             >
-                                <div className={`w-16 h-16 bg-gradient-to-br ${feature.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                                <div className={`w-16 h-16 bg-gradient-to-br ${feature.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 relative`}>
                                     <feature.icon className="h-8 w-8 text-white" />
+                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <div className="bg-white/20 rounded-full p-1">
+                                            <Play className="h-4 w-4 text-white" />
+                                        </div>
+                                    </div>
                                 </div>
                                 <h3 className="text-2xl font-bold text-gray-900 mb-4">{feature.title}</h3>
                                 <p className="text-gray-600 mb-6 leading-relaxed">{feature.description}</p>
@@ -256,7 +304,10 @@ const LandingPage = () => {
                                     <span className="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
                                         {feature.stats}
                                     </span>
-                                    <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
+                                    <div className="flex items-center text-gray-400 group-hover:text-blue-600 transition-colors">
+                                        <span className="text-sm mr-1">Watch Demo</span>
+                                        <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-all" />
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -279,11 +330,11 @@ const LandingPage = () => {
                             <span className="text-sm font-semibold text-white">Customer Success Stories</span>
                         </div>
                         <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                            Loved by 10,000+ Retailers
+                            Trusted by Retailers
                             <span className="block text-blue-200">Across India</span>
                         </h2>
                         <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-                            See how businesses like yours are growing with Shoplytics
+                            See how businesses are managing their operations with Shoplytics
                         </p>
                     </div>
 
@@ -343,10 +394,10 @@ const LandingPage = () => {
                             <span className="text-sm font-semibold text-green-600">Simple Pricing</span>
                         </div>
                         <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                            One Plan, Everything Included
+                            Simple & Transparent
                         </h2>
                         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                            No hidden fees, no surprises. Get all premium features with our transparent pricing.
+                            Get started with our complete retail management solution at no cost.
                         </p>
                     </div>
 
@@ -360,26 +411,26 @@ const LandingPage = () => {
                             </div>
 
                             <div className="text-center mb-8">
-                                <h3 className="text-2xl font-bold text-gray-900 mb-4">Professional Plan</h3>
+                                <h3 className="text-2xl font-bold text-gray-900 mb-4">Complete Solution</h3>
                                 <div className="flex items-center justify-center mb-4">
-                                    <span className="text-5xl font-bold text-gray-900">₹2,999</span>
-                                    <span className="text-gray-600 ml-2">/month</span>
+                                    <span className="text-5xl font-bold text-gray-900">Free</span>
+                                    <span className="text-gray-600 ml-2">to use</span>
                                 </div>
-                                <p className="text-gray-600">Everything you need to grow your business</p>
+                                <p className="text-gray-600">Full-featured retail management system</p>
                             </div>
 
                             <div className="space-y-4 mb-8">
                                 {[
-                                    'Unlimited transactions & products',
-                                    'Advanced analytics & reporting',
-                                    'Multi-location support',
-                                    'Customer management system',
-                                    'Real-time inventory tracking',
-                                    'Role-based user access',
-                                    'Mobile app included',
-                                    '24/7 priority support',
-                                    'Free data migration',
-                                    'Regular feature updates'
+                                    'Complete checkout counter system',
+                                    'Advanced analytics dashboard',
+                                    'Customer management & loyalty',
+                                    'Product inventory management',
+                                    'Transaction history & reporting',
+                                    'Role-based user access control',
+                                    'QR code feedback system',
+                                    'Real-time data synchronization',
+                                    'Secure user authentication',
+                                    'Responsive design for all devices'
                                 ].map((feature, index) => (
                                     <div key={index} className="flex items-center">
                                         <CheckCircle className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
@@ -392,11 +443,11 @@ const LandingPage = () => {
                                 to="/register"
                                 className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-2xl font-bold text-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg block text-center"
                             >
-                                Start 30-Day Free Trial
+                                Get Started Now
                             </Link>
 
                             <div className="text-center mt-4 text-sm text-gray-500">
-                                No credit card required • Cancel anytime
+                                No credit card required • Start immediately
                             </div>
                         </div>
                     </div>
@@ -405,7 +456,7 @@ const LandingPage = () => {
                     <div className="text-center mt-16">
                         <div className="inline-flex items-center px-6 py-3 bg-green-50 rounded-full border border-green-200">
                             <Shield className="h-5 w-5 text-green-600 mr-2" />
-                            <span className="text-green-700 font-semibold">30-Day Money Back Guarantee</span>
+                            <span className="text-green-700 font-semibold">Secure & Reliable Platform</span>
                         </div>
                     </div>
                 </div>
@@ -426,7 +477,7 @@ const LandingPage = () => {
                             </span>
                         </h2>
                         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                            Connect with popular payment gateways, accounting software, and e-commerce platforms.
+                            Built to work seamlessly with popular Indian payment and business tools.
                         </p>
                     </div>
 
@@ -457,12 +508,12 @@ const LandingPage = () => {
                 <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <div className="max-w-4xl mx-auto">
                         <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-                            Ready to 10X Your
-                            <span className="block text-blue-200">Business Growth?</span>
+                            Ready to Streamline
+                            <span className="block text-blue-200">Your Business?</span>
                         </h2>
                         <p className="text-xl md:text-2xl text-blue-100 mb-12 leading-relaxed">
-                            Join 10,000+ successful retailers who've transformed their business with Shoplytics.
-                            <span className="font-semibold text-white block mt-2">Start your free trial today - no credit card required!</span>
+                            Join retailers who've simplified their operations with Shoplytics.
+                            <span className="font-semibold text-white block mt-2">Start managing your business better today!</span>
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12">
@@ -470,7 +521,7 @@ const LandingPage = () => {
                                 to="/register"
                                 className="group bg-white text-blue-600 px-10 py-4 rounded-2xl text-lg font-bold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-2xl flex items-center justify-center"
                             >
-                                Start Free 30-Day Trial
+                                Get Started Free
                                 <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" />
                             </Link>
                             <Link
@@ -485,19 +536,19 @@ const LandingPage = () => {
                         <div className="flex flex-wrap justify-center items-center gap-8 text-blue-100">
                             <div className="flex items-center">
                                 <CheckCircle className="h-5 w-5 text-green-400 mr-2" />
-                                Free 30-day trial
+                                Free to use
                             </div>
                             <div className="flex items-center">
                                 <CheckCircle className="h-5 w-5 text-green-400 mr-2" />
-                                No setup fees
+                                Easy setup
                             </div>
                             <div className="flex items-center">
                                 <CheckCircle className="h-5 w-5 text-green-400 mr-2" />
-                                Cancel anytime
+                                Full-featured
                             </div>
                             <div className="flex items-center">
                                 <CheckCircle className="h-5 w-5 text-green-400 mr-2" />
-                                Money-back guarantee
+                                Secure & reliable
                             </div>
                         </div>
                     </div>
@@ -506,19 +557,21 @@ const LandingPage = () => {
 
             <Footer />
 
-            {/* Custom animations */}
-            <style jsx>{`
-                @keyframes fadeInUp {
-                    from {
-                        opacity: 0;
-                        transform: translateY(30px);
+            {/* Custom animations - moved to inline styles */}
+            <style dangerouslySetInnerHTML={{
+                __html: `
+                    @keyframes fadeInUp {
+                        from {
+                            opacity: 0;
+                            transform: translateY(30px);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateY(0);
+                        }
                     }
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
-                }
-            `}</style>
+                `
+            }} />
         </div>
     );
 };
