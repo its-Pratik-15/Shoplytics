@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import LoginForm from '../components/LoginForm';
+import PublicNavbar from '../../../shared/components/layout/PublicNavbar';
 
 const LoginPage = () => {
     const { user, loading } = useAuth();
@@ -38,7 +39,14 @@ const LoginPage = () => {
         return null;
     }
 
-    return <LoginForm />;
+    return (
+        <div className="min-h-screen bg-white">
+            <PublicNavbar />
+            <div className="pt-16">
+                <LoginForm />
+            </div>
+        </div>
+    );
 };
 
 export default LoginPage;

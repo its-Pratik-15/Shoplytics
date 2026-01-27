@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import RegisterForm from '../components/RegisterForm';
+import PublicNavbar from '../../../shared/components/layout/PublicNavbar';
 
 const RegisterPage = () => {
     const { user, loading } = useAuth();
@@ -33,7 +34,14 @@ const RegisterPage = () => {
         return null;
     }
 
-    return <RegisterForm />;
+    return (
+        <div className="min-h-screen bg-white">
+            <PublicNavbar />
+            <div className="pt-16">
+                <RegisterForm />
+            </div>
+        </div>
+    );
 };
 
 export default RegisterPage;
