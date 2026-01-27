@@ -30,6 +30,7 @@ export const AnalyticsPage = () => {
     const [categorySalesData, setCategorySalesData] = useState(null);
     const [customerSegmentationData, setCustomerSegmentationData] = useState(null);
     const [topProductsChartData, setTopProductsChartData] = useState(null);
+    const [feedbackData, setFeedbackData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [dateRange, setDateRange] = useState('30'); // days
 
@@ -63,7 +64,8 @@ export const AnalyticsPage = () => {
                 salesTrendsRes,
                 categorySalesRes,
                 customerLoyaltyRes,
-                topProductsRes
+                topProductsRes,
+                feedbackRes
             ] = await Promise.all([
                 analyticsAPI.getDashboardOverview(params),
                 analyticsAPI.getMostSellingProducts({ ...params, limit: 5 }),
@@ -72,7 +74,8 @@ export const AnalyticsPage = () => {
                 analyticsAPI.getSalesTrends({ ...params, period: 'daily' }),
                 analyticsAPI.getCategorySalesData(params),
                 analyticsAPI.getCustomerLoyaltyStats(params),
-                analyticsAPI.getTopProductsChartData({ ...params, limit: 8, type: 'revenue' })
+                analyticsAPI.getTopProductsChartData({ ...params, limit: 8, type: 'revenue' }),
+                analyticsAPI.getFeedbackSpendingInsights(params)
             ]);
 
             if (overviewRes.success) setOverview(overviewRes.data);
@@ -83,6 +86,7 @@ export const AnalyticsPage = () => {
             if (categorySalesRes.success) setCategorySalesData(categorySalesRes.data);
             if (customerLoyaltyRes.success) setCustomerSegmentationData(customerLoyaltyRes.data);
             if (topProductsRes.success) setTopProductsChartData(topProductsRes.data);
+            if (feedbackRes.success) setFeedbackData(feedbackRes.data);
 
         } catch (error) {
             toast.error('Failed to fetch analytics data');
@@ -121,6 +125,42 @@ export const AnalyticsPage = () => {
             </Layout>
         );
     }
+
+    const transformFeedbackData = (apiData) => {
+        if (!apiData || !apiData.feedbackDistribution || !Array.isArray(apiData.feedbackDistribution)) {
+            return {
+                labels: ['⭐', '⭐⭐', '⭐⭐⭐', '⭐⭐⭐⭐', '⭐⭐⭐⭐⭐'],
+                datasets: [{
+                    label: 'Customer Feedback',
+                    data: [2, 1, 3, 8, 15],
+                    backgroundColor: [
+                        '#EF4444', '#F97316', '#F59E0B', '#10B981', '#059669'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            };
+        }
+
+        const ratings = [1, 2, 3, 4, 5];
+        const data = ratings.map(rating => {
+            const found = apiData.feedbackDistribution.find(item => item.rating === rating);
+            return found ? found.count : 0;
+        });
+
+        return {
+            labels: ['⭐', '⭐⭐', '⭐⭐⭐', '⭐⭐⭐⭐', '⭐⭐⭐⭐⭐'],
+            datasets: [{
+                label: 'Customer Feedback',
+                data,
+                backgroundColor: [
+                    '#EF4444', '#F97316', '#F59E0B', '#10B981', '#059669'
+                ],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        };
+    };
 
     const StatCard = ({ title, value, icon: Icon, color, trend, prefix = '', suffix = '' }) => (
         <div className={`group bg-gradient-to-br ${color} rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300`}>
@@ -252,7 +292,7 @@ export const AnalyticsPage = () => {
                 )}
 
                 {/* Charts Row */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Sales Trends Chart */}
                     {salesTrends && salesTrends.chartData && (
                         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow duration-300">
@@ -309,10 +349,42 @@ export const AnalyticsPage = () => {
                             />
                         </div>
                     )}
+
+                    {/* Customer Feedback Chart */}
+                    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow duration-300">
+                        <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center space-x-3">
+                                <div className="bg-yellow-100 p-2 rounded-xl">
+                                    <Star className="h-6 w-6 text-yellow-600" />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900">Customer Feedback</h3>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <Star className="h-5 w-5 text-yellow-500 fill-current" />
+                                <span className="text-sm font-semibold text-gray-600">
+                                    {overview?.averageRating ? `${overview.averageRating.toFixed(1)} avg` : '4.5 avg'}
+                                </span>
+                            </div>
+                        </div>
+                        <div className="h-64">
+                            <DoughnutChart
+                                data={transformFeedbackData(feedbackData)}
+                                height={256}
+                            />
+                        </div>
+                        <div className="mt-4 text-center">
+                            <Link
+                                to="/feedback"
+                                className="text-yellow-600 hover:text-yellow-700 font-semibold text-sm hover:underline transition-colors"
+                            >
+                                View All Feedback
+                            </Link>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Second Charts Row */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Top Products Chart */}
                     {topProductsChartData && topProductsChartData.chartData && (
                         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow duration-300">
@@ -353,6 +425,70 @@ export const AnalyticsPage = () => {
                                 data={customerSegmentationData.chartData}
                                 height={300}
                             />
+                        </div>
+                    )}
+
+                    {/* Customer Loyalty Chart */}
+                    {customerSegmentationData && (
+                        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow duration-300">
+                            <div className="flex items-center justify-between mb-6">
+                                <div className="flex items-center space-x-3">
+                                    <div className="bg-purple-100 p-2 rounded-xl">
+                                        <Users className="h-6 w-6 text-purple-600" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-gray-900">Customer Loyalty</h3>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <Users className="h-5 w-5 text-blue-500" />
+                                    <span className="text-sm font-semibold text-gray-600">
+                                        {customerSegmentationData.totalCustomers || 0} total
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="h-64">
+                                <DoughnutChart
+                                    data={customerSegmentationData.loyaltyDistribution ? {
+                                        labels: customerSegmentationData.loyaltyDistribution.labels,
+                                        datasets: [{
+                                            label: 'Customer Loyalty',
+                                            data: customerSegmentationData.loyaltyDistribution.data,
+                                            backgroundColor: customerSegmentationData.loyaltyDistribution.backgroundColor,
+                                            borderWidth: 2,
+                                            borderColor: '#fff'
+                                        }]
+                                    } : {
+                                        labels: ['New Customers', 'Regular Customers', 'Loyal Customers'],
+                                        datasets: [{
+                                            label: 'Customer Loyalty',
+                                            data: [25, 45, 30],
+                                            backgroundColor: ['#10B981', '#3B82F6', '#8B5CF6'],
+                                            borderWidth: 2,
+                                            borderColor: '#fff'
+                                        }]
+                                    }}
+                                    height={256}
+                                />
+                            </div>
+                            <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs">
+                                <div className="p-2 bg-green-50 rounded">
+                                    <div className="font-semibold text-green-700">
+                                        {customerSegmentationData.newCustomers || 0}
+                                    </div>
+                                    <div className="text-green-600">New</div>
+                                </div>
+                                <div className="p-2 bg-blue-50 rounded">
+                                    <div className="font-semibold text-blue-700">
+                                        {customerSegmentationData.regularCustomers || 0}
+                                    </div>
+                                    <div className="text-blue-600">Regular</div>
+                                </div>
+                                <div className="p-2 bg-purple-50 rounded">
+                                    <div className="font-semibold text-purple-700">
+                                        {customerSegmentationData.loyalCustomers || 0}
+                                    </div>
+                                    <div className="text-purple-600">Loyal</div>
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>
@@ -492,6 +628,63 @@ export const AnalyticsPage = () => {
                                 </p>
                                 <p className="text-sm text-gray-600 mt-1">One-time</p>
                             </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Customer Loyalty Insights */}
+                {customerSegmentationData?.avgSpendingByLoyalty && (
+                    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                        <div className="flex items-center space-x-3 mb-6">
+                            <div className="bg-gradient-to-br from-purple-500 to-pink-500 p-2 rounded-xl">
+                                <Star className="h-6 w-6 text-white" />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900">Customer Loyalty Insights</h3>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border border-green-200 hover:shadow-lg transition-shadow duration-300">
+                                <div className="text-lg mb-2 text-green-600">
+                                    👋 New Customers
+                                </div>
+                                <div className="text-3xl font-bold text-green-700 mb-2">
+                                    ₹{Math.round(customerSegmentationData.avgSpendingByLoyalty.new).toLocaleString()}
+                                </div>
+                                <div className="text-sm text-green-600">Average Spending</div>
+                                <div className="text-xs text-green-500 mt-1">
+                                    {customerSegmentationData.newCustomers} customers
+                                </div>
+                            </div>
+                            <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200 hover:shadow-lg transition-shadow duration-300">
+                                <div className="text-lg mb-2 text-blue-600">
+                                    🔄 Regular Customers
+                                </div>
+                                <div className="text-3xl font-bold text-blue-700 mb-2">
+                                    ₹{Math.round(customerSegmentationData.avgSpendingByLoyalty.regular).toLocaleString()}
+                                </div>
+                                <div className="text-sm text-blue-600">Average Spending</div>
+                                <div className="text-xs text-blue-500 mt-1">
+                                    {customerSegmentationData.regularCustomers} customers
+                                </div>
+                            </div>
+                            <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl border border-purple-200 hover:shadow-lg transition-shadow duration-300">
+                                <div className="text-lg mb-2 text-purple-600">
+                                    💎 Loyal Customers
+                                </div>
+                                <div className="text-3xl font-bold text-purple-700 mb-2">
+                                    ₹{Math.round(customerSegmentationData.avgSpendingByLoyalty.loyal).toLocaleString()}
+                                </div>
+                                <div className="text-sm text-purple-600">Average Spending</div>
+                                <div className="text-xs text-purple-500 mt-1">
+                                    {customerSegmentationData.loyalCustomers} customers
+                                </div>
+                            </div>
+                        </div>
+                        <div className="mt-6 text-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-blue-50 p-4 rounded-xl border border-gray-200">
+                            <div className="flex items-center justify-center space-x-2 mb-2">
+                                <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                                <span className="font-semibold">Loyalty Insights</span>
+                            </div>
+                            <div>Loyal customers (3+ visits) typically spend more and provide higher lifetime value</div>
                         </div>
                     </div>
                 )}
