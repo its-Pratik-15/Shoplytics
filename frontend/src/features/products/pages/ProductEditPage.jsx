@@ -14,6 +14,9 @@ export const ProductEditPage = () => {
     useEffect(() => {
         if (id) {
             fetchProduct();
+        } else {
+            // For new products, no need to fetch data
+            setLoading(false);
         }
     }, [id]);
 

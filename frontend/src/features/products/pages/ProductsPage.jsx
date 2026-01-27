@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../../../shared/components/layout/Layout';
-import Button from '../../../shared/components/ui/Button';
 import Input from '../../../shared/components/ui/Input';
 import { ProductCard } from '../components/ProductCard';
 import { productsAPI } from '../services/products.api';
@@ -17,7 +16,7 @@ export const ProductsPage = () => {
     const [categoryFilter, setCategoryFilter] = useState('');
     const [categories, setCategories] = useState([]);
     const navigate = useNavigate();
-    const { hasRole } = useAuth();
+    const { hasRole, user } = useAuth();
 
     // Check if user can manage products (OWNER, ADMIN, MANAGER)
     const canManageProducts = hasRole(['OWNER', 'ADMIN', 'MANAGER']);
@@ -71,6 +70,7 @@ export const ProductsPage = () => {
             toast.error('You do not have permission to add products');
             return;
         }
+
         navigate('/products/new');
     };
 
@@ -106,8 +106,13 @@ export const ProductsPage = () => {
                                 </div>
                                 {canManageProducts && (
                                     <button
-                                        onClick={handleAddProduct}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            handleAddProduct();
+                                        }}
                                         className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 border border-white/30 flex items-center space-x-2"
+                                        type="button"
                                     >
                                         <Plus className="h-5 w-5" />
                                         <span>Add Product</span>
@@ -262,8 +267,13 @@ export const ProductsPage = () => {
                                 </button>
                             ) : canManageProducts ? (
                                 <button
-                                    onClick={handleAddProduct}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        handleAddProduct();
+                                    }}
                                     className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center space-x-2 mx-auto"
+                                    type="button"
                                 >
                                     <Plus className="h-5 w-5" />
                                     <span>Add Your First Product</span>
