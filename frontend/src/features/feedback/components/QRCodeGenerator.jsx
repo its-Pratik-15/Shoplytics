@@ -4,6 +4,7 @@ import { Card, Button } from '../../../shared/components/ui';
 const QRCodeGenerator = () => {
     const [qrCodeUrl, setQrCodeUrl] = useState('');
     const [loading, setLoading] = useState(false);
+    const [downloading, setDownloading] = useState(false);
 
     const feedbackUrl = `${window.location.origin}/customer-feedback`;
 
@@ -20,14 +21,38 @@ const QRCodeGenerator = () => {
         }
     };
 
-    const downloadQRCode = () => {
+    const downloadQRCode = async () => {
         if (qrCodeUrl) {
-            const link = document.createElement('a');
-            link.href = qrCodeUrl;
-            link.download = 'shoplytics-feedback-qr.png';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            try {
+                setDownloading(true);
+                // Fetch the image and convert to blob
+                const response = await fetch(qrCodeUrl);
+                const blob = await response.blob();
+
+                // Create download link
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'shoplytics-feedback-qr.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                // Clean up the blob URL
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error('Error downloading QR code:', error);
+                // Fallback: try direct download
+                const link = document.createElement('a');
+                link.href = qrCodeUrl;
+                link.download = 'shoplytics-feedback-qr.png';
+                link.target = '_blank';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } finally {
+                setDownloading(false);
+            }
         }
     };
 
@@ -193,13 +218,23 @@ const QRCodeGenerator = () => {
                                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                                     <Button
                                         onClick={downloadQRCode}
+                                        disabled={downloading}
                                         variant="outline"
-                                        className="flex items-center justify-center space-x-2 px-6 py-3 border-2 border-blue-200 text-blue-700 hover:bg-blue-50 hover:border-blue-300 rounded-xl font-semibold transition-all duration-300 hover:scale-105"
+                                        className="flex items-center justify-center space-x-2 px-6 py-3 border-2 border-blue-200 text-blue-700 hover:bg-blue-50 hover:border-blue-300 rounded-xl font-semibold transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                                     >
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                        </svg>
-                                        <span>Download</span>
+                                        {downloading ? (
+                                            <>
+                                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
+                                                <span>Downloading...</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                </svg>
+                                                <span>Download</span>
+                                            </>
+                                        )}
                                     </Button>
 
                                     <Button
